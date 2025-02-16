@@ -1,4 +1,28 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+
+function RegisterSidebar() {
+    return (
+        <div className="hidden sm:w-1/3 bg-sky-800 sm:flex sm:justify-center sm:min-h-screen px-4 py-30">
+            <div>
+                <h1 className="my-4 text-center text-xl text-white font-semibold">Trusted by the world's leading brands</h1>
+                <div className="flex gap-3 flex-wrap px-2 justify-center">
+                    <figure className="mb-1 w-20 h-8 bg-amber-50/30"></figure>
+                    <figure className="mb-1 w-28 h-8 bg-amber-50/30"></figure>
+                    <figure className="mb-1 w-20 h-8 bg-amber-50/30"></figure>
+                    <figure className="mb-1 w-20 h-8 bg-amber-50/30"></figure>
+                    <figure className="mb-1 w-36 h-8 bg-amber-50/30"></figure>
+                    <figure className="mb-1 w-36 h-8 bg-amber-50/30"></figure>
+                    <figure className="mb-1 w-30 h-8 bg-amber-50/30"></figure>
+                    <figure className="mb-1 w-20 h-8 bg-amber-50/30"></figure>
+                    <figure className="mb-1 w-36 h-8 bg-amber-50/30"></figure>
+                    <figure className="mb-1 w-36 h-8 bg-amber-50/30"></figure>
+                    <figure className="mb-1 w-30 h-8 bg-amber-50/30"></figure>
+                </div>
+            </div>
+        </div>
+    )
+}
 
 function Register() {
     const [form, setForm] = useState({
@@ -87,30 +111,14 @@ function Register() {
 
                         <button className="border border-gray-400 font-bold py-2 hover:bg-gray-100 hover:cursor-pointer active:bg-white" type="submit">Log in with Google</button>
 
-                        <p className="text-center">Already have an account? <a className="text-blue-700" href="#">Log in</a></p>
+                        <p className="text-center">Already have an account? <Link className="text-blue-700" to="/login">Log in</Link></p>
                     </form>
                 </div>
-                <div className="hidden sm:w-1/3 bg-sky-800 sm:flex sm:justify-center sm:min-h-screen px-4 py-30">
-                    <div>
-                        <h1 className="my-4 text-center text-xl text-white font-semibold">Trusted by the world's leading brands</h1>
-                        <div className="flex gap-3 flex-wrap px-2 justify-center">
-                            <figure className="mb-1 w-20 h-8 bg-amber-50/30"></figure>
-                            <figure className="mb-1 w-28 h-8 bg-amber-50/30"></figure>
-                            <figure className="mb-1 w-20 h-8 bg-amber-50/30"></figure>
-                            <figure className="mb-1 w-20 h-8 bg-amber-50/30"></figure>
-                            <figure className="mb-1 w-36 h-8 bg-amber-50/30"></figure>
-                            <figure className="mb-1 w-36 h-8 bg-amber-50/30"></figure>
-                            <figure className="mb-1 w-30 h-8 bg-amber-50/30"></figure>
-                            <figure className="mb-1 w-20 h-8 bg-amber-50/30"></figure>
-                            <figure className="mb-1 w-36 h-8 bg-amber-50/30"></figure>
-                            <figure className="mb-1 w-36 h-8 bg-amber-50/30"></figure>
-                            <figure className="mb-1 w-30 h-8 bg-amber-50/30"></figure>
-                        </div>
-                    </div>
-                </div>
+                <RegisterSidebar />
             </div>
         </div>
     );
 }
 
+export { RegisterSidebar };
 export default Register;
