@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { RegisterSidebar } from "./Register";
+import { GoogleIcon } from "../utils/icons.jsx";
 
 function Login() {
     const [form, setForm] = useState({
@@ -48,7 +49,7 @@ function Login() {
                             <span className="bg-white px-3">OR</span>
                         </div>
 
-                        <button className="border border-gray-400 font-bold py-2 hover:bg-gray-100 hover:cursor-pointer active:bg-white" type="submit">Log in with Google</button>
+                        <button className="flex items-center justify-center gap-2 border border-gray-400 font-bold py-2 hover:bg-gray-100 hover:cursor-pointer active:bg-white" type="submit"><GoogleIcon size={24} /> <span>Log in with Google</span></button>
 
                         <p className="text-center">Don't have an account? <Link className="text-blue-700" to="/register">Create account</Link></p>
                     </form>

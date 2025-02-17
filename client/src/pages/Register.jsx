@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { GoogleIcon } from "../utils/icons";
 
 function RegisterSidebar() {
     return (
@@ -109,7 +110,7 @@ function Register() {
                             <span className="bg-white px-3">OR</span>
                         </div>
 
-                        <button className="border border-gray-400 font-bold py-2 hover:bg-gray-100 hover:cursor-pointer active:bg-white" type="submit">Log in with Google</button>
+                        <button className="flex justify-center items-center gap-2 border border-gray-400 font-bold py-2 hover:bg-gray-100 hover:cursor-pointer active:bg-white" type="submit"><GoogleIcon size={24} /> <span>Log in with Google</span></button>
 
                         <p className="text-center">Already have an account? <Link className="text-blue-700" to="/login">Log in</Link></p>
                     </form>
