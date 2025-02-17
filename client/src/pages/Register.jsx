@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { GoogleIcon } from "../utils/icons";
+import { auth } from "../config/firebase";
 
 function RegisterSidebar() {
     return (
@@ -39,9 +41,16 @@ function Register() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(form);
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);
+            console.info(userCredential);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
