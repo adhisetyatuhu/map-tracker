@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { RegisterSidebar } from "./Register";
 import { GoogleIcon } from "../utils/icons.jsx";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config/firebase.js";
+import { AuthContext } from "../context/AuthContext.jsx";
 
 function Login() {
     const [form, setForm] = useState({
@@ -11,6 +12,15 @@ function Login() {
         password: '',
     });
     const navigate = useNavigate();
+    const { user } = useContext(AuthContext);
+
+    useEffect(() => {
+        if (user) {
+            navigate('/');
+        } else {
+            navigate('/login');
+        }
+    }, [user])
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
