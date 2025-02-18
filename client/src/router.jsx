@@ -4,6 +4,8 @@ import App from './App';
 import Login from './pages/Login';
 import SearchMapBox from './components/SearchMapBox';
 import AdminAddPage from './pages/AdminAddPage';
+import DriverHomePage from './pages/DriverHomePage';
+import DriverDetailsOrderPage from './pages/DriverDetailsOrderPage';
 
 const router = createBrowserRouter([
     {
@@ -25,6 +27,14 @@ const router = createBrowserRouter([
     {
         path: '/admin/add',
         element: <AdminAddPage />
+    },
+    {
+        path: '/driver',
+        element: <DriverHomePage />
+    },
+    {
+        path: '/driver/:resi',
+        element: <DriverDetailsOrderPage />
     }
 ])
 
