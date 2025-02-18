@@ -28,7 +28,9 @@ function App() {
       {!user ? <h1 className='text-2xl text-red-400'>Loading...</h1> :
         <div>
           <Header />
-          <SearchMapBox />
+          <div className='container mx-auto'>
+            <SearchMapBox />
+          </div>
         </div>
       }
     </>

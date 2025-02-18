@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { collection, setDoc, doc } from "firebase/firestore";
 import { GoogleIcon } from "../utils/icons";
-import { auth } from "../config/firebase";
+import { auth, db } from "../config/firebase";
 
 function RegisterSidebar() {
     return (
@@ -28,6 +29,7 @@ function RegisterSidebar() {
 }
 
 function Register() {
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         email: '',
         firstName: '',
@@ -48,6 +50,18 @@ function Register() {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);
             console.info(userCredential);
+
+            // create profile
+            const userRef = collection(db, "users");
+            await setDoc(doc(userRef, userCredential.user.uid), {
+                email: form.email,
+                firstName: form.firstName,
+                lastName: form.lastName,
+                phone: form.phone,
+                roles: 'grab',
+            })
+            navigate('/login');
+
         } catch (error) {
             console.error(error);
         }
