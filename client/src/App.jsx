@@ -9,13 +9,19 @@ import Header from './components/Header'
 import SearchMapBox from './components/SearchMapBox'
 
 function App() {
-  const { user, loading } = useContext(AuthContext)
+  const { user, role } = useContext(AuthContext)
   const navigate = useNavigate()
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         navigate('/login')
+      } else {
+        if (role !== 'admin') {
+          navigate('/admin/add')
+        } else {
+          navigate('/')
+        }
       }
     });
 
