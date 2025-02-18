@@ -99,8 +99,8 @@ function AdminAddPage() {
             // const customId = `${provider}-${Date.now()}`
             const customId = `${provider}-${generateRandomId(6)}` // Contoh ID kustom
             await setDoc(doc(db, 'routes', customId), {
-                coordinateA: coordinatesA,
-                coordinateB: coordinatesB,
+                coordinateA: {long: coordinatesA[0], lat: coordinatesA[1]}, // Contoh data koordinat
+                coordinateB: {long: coordinatesB[0], lat: coordinatesB[1]}, // Contoh data koordinat
                 provider: provider,
                 status: 'pending',
             })
@@ -113,9 +113,11 @@ function AdminAddPage() {
             // Reset map center
             if (mapInstanceRefA.current) {
                 mapInstanceRefA.current.setCenter([106.82723932,-6.17356323])
+                mapInstanceRefA.current.setZoom(10)
             }
             if (mapInstanceRefB.current) {
                 mapInstanceRefB.current.setCenter([106.82723932,-6.17356323])
+                mapInstanceRefB.current.setZoom(10)
             }
         } catch (error) {
             console.error(error)
@@ -142,6 +144,8 @@ function AdminAddPage() {
                                     onChange={(d) => {
                                         setInputValueA(d)
                                     }}
+                                    placeholder='Search for Pickup location'
+                                    onClear={handleSubmit}
                                     onRetrieve={handleRetrieveA}
                                     options={{
                                         language: 'id',
@@ -158,9 +162,11 @@ function AdminAddPage() {
                                     map={mapInstanceRefB.current}
                                     mapboxgl={mapboxgl}
                                     value={inputValueB}
+                                    onClear={handleSubmit}
                                     onChange={(d) => {
                                         setInputValueB(d)
                                     }}
+                                    placeholder='Search for Destination location'
                                     onRetrieve={handleRetrieveB}
                                     options={{
                                         language: 'id',
