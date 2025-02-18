@@ -3,6 +3,7 @@ import Register from './pages/Register';
 import App from './App';
 import Login from './pages/Login';
 import SearchMapBox from './components/SearchMapBox';
+import AdminAddPage from './pages/AdminAddPage';
 
 const router = createBrowserRouter([
     {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
     {
         path: '/test',
         element: <SearchMapBox/>
+    },
+    {
+        path: '/admin/add',
+        element: <AdminAddPage />
     }
 ])
 
