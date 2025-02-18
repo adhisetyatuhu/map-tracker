@@ -1,5 +1,4 @@
-// import React from 'react'
-import { useRef, useEffect, useState } from "react"
+import React, { useRef, useEffect, useState } from "react"
 import { SearchBox } from "@mapbox/search-js-react"
 import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
@@ -11,6 +10,7 @@ const accessToken = import.meta.env.VITE_API_KEY_MapBox
 function SearchMapBox() {
     const mapContainerRef = useRef()
     const mapInstanceRef = useRef()
+    const directionsRef = useRef()
     const [mapLoaded, setMapLoaded] = useState(false)
     const [inputValueA, setInputValueA] = useState("")
     const [inputValueB, setInputValueB] = useState("")
@@ -60,30 +60,26 @@ function SearchMapBox() {
 
 
     const updateDirections = (coordinatesA, coordinatesB) => {
-        const directions = new MapboxDirections({
-            accessToken: mapboxgl.accessToken,
-            unit: 'metric',
-            profile: 'mapbox/driving',
-            origin: coordinatesA,
-            destination: coordinatesB,
-            controls: {
-                inputs: true,
-                instructions: true,
-                profileSwitcher: false,
-            }
-        })
-
-        if (coordinatesA.length, coordinatesB.length) {
-            directions.setOrigin(coordinatesA)
-            directions.setDestination(coordinatesB)
+        if (!directionsRef.current) {
+            directionsRef.current = new MapboxDirections({
+                accessToken: mapboxgl.accessToken,
+                unit: 'metric',
+                profile: 'mapbox/driving',
+                controls: {
+                    inputs: true,
+                    instructions: true,
+                    profileSwitcher: false,
+                }
+            })
+            mapInstanceRef.current.addControl(directionsRef.current, 'top-left')
         }
 
-        mapInstanceRef.current.addControl(
-            directions,
-            'top-left'
-        )
+        if (coordinatesA.length && coordinatesB.length) {
+            directionsRef.current.setOrigin(coordinatesA)
+            directionsRef.current.setDestination(coordinatesB)
+        }
 
-        directions.on('route', (e) => {
+        directionsRef.current.on('route', (e) => {
             console.log(e.route)
         })
     }
