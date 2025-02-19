@@ -5,6 +5,7 @@ import { GoogleIcon } from "../utils/icons.jsx";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config/firebase.js";
 import { AuthContext } from "../context/AuthContext.jsx";
+import Swal from "sweetalert2";
 
 function Login() {
     const [form, setForm] = useState({
@@ -34,6 +35,13 @@ function Login() {
             const userCredential = await signInWithEmailAndPassword(auth, form.email, form.password);
             console.info(userCredential);
             navigate('/');
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Login success",
+                showConfirmButton: false,
+                timer: 1500
+            });
         } catch (error) {
             console.error(error);
         }
@@ -64,7 +72,7 @@ function Login() {
                             onChange={handleChange}
                         />
 
-                        <button className="bg-blue-700 text-white font-bold py-2 mt-4 hover:bg-blue-700/90 hover:cursor-pointer active:bg-blue-700" type="submit">Create Account</button>
+                        <button className="bg-blue-700 text-white font-bold py-2 mt-4 hover:bg-blue-700/90 hover:cursor-pointer active:bg-blue-700" type="submit">Log in</button>
 
                         <div className="h-3 my-4 border-b-2 border-gray-300 text-center">
                             <span className="bg-white px-3">OR</span>

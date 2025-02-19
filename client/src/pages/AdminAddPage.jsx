@@ -5,11 +5,12 @@ import mapboxgl from "mapbox-gl"
 import { AuthContext } from '../context/AuthContext'
 import { setDoc, doc } from 'firebase/firestore'
 import { db } from '../config/firebase'
+import Swal from 'sweetalert2'
 
 const accessToken = import.meta.env.VITE_API_KEY_MapBox
 
 function AdminAddPage() {
-    const { user, loading } = useContext(AuthContext)
+    const { user, loading, profile } = useContext(AuthContext)
     const navigate = useNavigate()
     const mapContainerRefA = useRef()
     const mapContainerRefB = useRef()
@@ -25,10 +26,14 @@ function AdminAddPage() {
     const [provider, setProvider] = useState("")
 
     useEffect(() => {
-        if (!loading && !user) {
-            navigate('/login')
+        if (!loading) {
+            if (!user) {
+                navigate('/login')
+            } else if (profile?.role !== 'admin') {
+                navigate('/driver')
+            }
         }
-    }, [user, loading])
+    }, [user, loading, profile])
 
     const handleRetrieveA = (result) => {
         if (result && result.features && result.features.length > 0) {
@@ -79,9 +84,11 @@ function AdminAddPage() {
     }
 
     useEffect(() => {
-        initializeMapA()
-        initializeMapB()
-    }, [])
+        if (!loading) {
+            initializeMapA()
+            initializeMapB()
+        }
+    }, [loading])
 
     const generateRandomId = (length) => {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -93,35 +100,51 @@ function AdminAddPage() {
         return result
     }
 
+    const clearForm = () => {
+        setInputValueA("")
+        setInputValueB("")
+        setCoordinatesA([])
+        setCoordinatesB([])
+        setProvider("")
+        if (mapInstanceRefA.current) {
+            mapInstanceRefA.current.setCenter([106.82723932, -6.17356323])
+            mapInstanceRefA.current.setZoom(10)
+        }
+        if (mapInstanceRefB.current) {
+            mapInstanceRefB.current.setCenter([106.82723932, -6.17356323])
+            mapInstanceRefB.current.setZoom(10)
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            // const customId = `${provider}-${Date.now()}`
-            const customId = `${provider}-${generateRandomId(6)}` // Contoh ID kustom
+            const customId = `${provider}-${generateRandomId(6)}`
             await setDoc(doc(db, 'routes', customId), {
-                coordinateA: { long: coordinatesA[0], lat: coordinatesA[1] }, // Contoh data koordinat
-                coordinateB: { long: coordinatesB[0], lat: coordinatesB[1] }, // Contoh data koordinat
+                coordinateA: { long: coordinatesA[0], lat: coordinatesA[1] },
+                coordinateB: { long: coordinatesB[0], lat: coordinatesB[1] },
                 provider: provider,
                 status: 'pending',
             })
-            // Reset state
-            setInputValueA("")
-            setInputValueB("")
-            setCoordinatesA([])
-            setCoordinatesB([])
-            setProvider("")
-            // Reset map center
-            if (mapInstanceRefA.current) {
-                mapInstanceRefA.current.setCenter([106.82723932, -6.17356323])
-                mapInstanceRefA.current.setZoom(10)
-            }
-            if (mapInstanceRefB.current) {
-                mapInstanceRefB.current.setCenter([106.82723932, -6.17356323])
-                mapInstanceRefB.current.setZoom(10)
-            }
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Pesanan telah ditambahkan!",
+                showConfirmButton: false,
+                timer: 1500
+            })
+            clearForm()
         } catch (error) {
             console.error(error)
         }
+    }
+
+    if (loading) {
+        return (
+            <div className='container mx-auto flex justify-center items-center h-screen'>
+                <h1>Loading...</h1>
+            </div>
+        )
     }
 
     return (
@@ -135,7 +158,6 @@ function AdminAddPage() {
                         >
                             <h1 className='text-2xl font-bold'>Add Route</h1>
                             <fieldset>
-                                {/* {JSON.stringify(coordinatesA)} */}
                                 <label>From:</label>
                                 <SearchBox
                                     accessToken={accessToken}
@@ -146,7 +168,7 @@ function AdminAddPage() {
                                         setInputValueA(d)
                                     }}
                                     placeholder='Search for Pickup location'
-                                    onClear={handleSubmit}
+                                    onClear={clearForm}
                                     onRetrieve={handleRetrieveA}
                                     options={{
                                         language: 'id',
@@ -156,14 +178,13 @@ function AdminAddPage() {
                                 />
                             </fieldset>
                             <fieldset>
-                                {/* {JSON.stringify(coordinatesB)} */}
                                 <label>To:</label>
                                 <SearchBox
                                     accessToken={accessToken}
                                     map={mapInstanceRefB.current}
                                     mapboxgl={mapboxgl}
                                     value={inputValueB}
-                                    onClear={handleSubmit}
+                                    onClear={clearForm}
                                     onChange={(d) => {
                                         setInputValueB(d)
                                     }}
@@ -177,16 +198,13 @@ function AdminAddPage() {
                                 />
                             </fieldset>
                             <fieldset>
-                                {/* {JSON.stringify(provider)} */}
                                 <select
                                     className='border border-gray-300 shadow w-full p-2 my-4 rounded-md'
                                     value={provider}
                                     onChange={(e) => setProvider(e.target.value)}
                                 >
                                     <option value="" hidden>Select Provider</option>
-                                    <option value="gojek">Gojek</option>
-                                    <option value="grab">Grab</option>
-                                    <option value="bluebird">Blue Bird</option>
+                                    <option value="jnt">J&T</option>
                                     <option value="jne">JNE</option>
                                     <option value="posindonesia">Pos Indonesia</option>
                                     <option value="tiki">TIKI</option>
@@ -194,20 +212,15 @@ function AdminAddPage() {
                                     <option value="anteraja">AnterAja</option>
                                     <option value="sicepat">SiCepat</option>
                                     <option value="lionparcel">Lion Parcel</option>
-                                    <option value="rpx">RPX</option>
-                                    <option value="pcp">PCP</option>
                                     <option value="firstlogistic">First Logistics</option>
                                     <option value="indahcargo">Indah Cargo</option>
-                                    <option value="jetexpress">Jet Express</option>
-                                    <option value="slis">SLIS</option>
-                                    <option value="starcargo">Star Cargo</option>
-                                    <option value="rex">REX</option>
                                 </select>
                             </fieldset>
                             <fieldset>
                                 <button
                                     type='submit'
-                                    className='bg-blue-500 text-white py-2 px-4 rounded-md hover:cursor-pointer hover:bg-blue-600 active:bg-blue-500'
+                                    disabled={!mapLoadedA || !mapLoadedB || !provider || !coordinatesA.length || !coordinatesB.length}
+                                    className={` bg-blue-500 text-white py-2 px-4 rounded-md ${!mapLoadedA || !mapLoadedB || !provider || !coordinatesA.length || !coordinatesB.length ? 'cursor-not-allowed' : 'hover:cursor-pointer hover:bg-blue-600 active:bg-blue-500'}`}
                                 >
                                     Submit
                                 </button>
