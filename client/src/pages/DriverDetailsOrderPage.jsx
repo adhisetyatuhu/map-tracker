@@ -1,4 +1,4 @@
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { db } from '../config/firebase'
@@ -26,6 +26,10 @@ function DriverDetailsOrderPage() {
     const [dataRoute, setDataRoute] = useState([])
     const [startJourney, setStartJourney] = useState(false)
 
+    
+    const [route, setRoute] = useState([])
+    const [loadingRoutes, setLoadingRoutes] = useState(true)
+
     const mapContainerRef = useRef()
     const mapInstanceRef = useRef()
     const directionsRef = useRef()
@@ -36,9 +40,39 @@ function DriverDetailsOrderPage() {
                 navigate('/login')
             } else if (profile?.role !== 'driver') {
                 navigate('/admin')
+            } else if (route?.status === 'done') {
+                navigate('/driver')
+            } else if (route.length === 0) {
+                navigate('/driver')
             }
         }
-    }, [user, loading, profile])
+    }, [user, loading, profile, route])
+
+    const getRouteByResi = async () => {
+        if (!profile?.provider) {
+            setError(new Error('Provider is not defined'))
+            setLoadingRoutes(false)
+            return
+        }
+
+        setLoadingRoutes(true)
+        try {
+            setError(null)
+            const route = await getDoc(doc(db, 'routes', resi))
+            setRoute(route.data())
+        } catch (error) {
+            console.log(error)
+            setError(error)
+        } finally {
+            setLoadingRoutes(false)
+        }
+    }
+
+    useEffect(() => {
+        if (profile) {
+            getRouteByResi()
+        }
+    }, [profile])
 
     const getLocation = () => {
         let idx = 0

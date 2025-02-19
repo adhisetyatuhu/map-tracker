@@ -20,6 +20,8 @@ function AdminAddPage() {
     const [mapLoadedB, setMapLoadedB] = useState(false)
     const [inputValueA, setInputValueA] = useState("")
     const [inputValueB, setInputValueB] = useState("")
+    const [locationA, setLocationA] = useState("")
+    const [locationB, setLocationB] = useState("")
 
     const [coordinatesA, setCoordinatesA] = useState([])
     const [coordinatesB, setCoordinatesB] = useState([])
@@ -39,6 +41,8 @@ function AdminAddPage() {
         if (result && result.features && result.features.length > 0) {
             const [lng, lat] = result.features[0].geometry.coordinates
             setCoordinatesA([lng, lat])
+            console.log(result.features[0].properties, "location A")
+            setLocationA(result.features[0].properties) // Save location A
             if (mapInstanceRefA.current) {
                 mapInstanceRefA.current.setCenter([lng, lat])
             }
@@ -49,6 +53,8 @@ function AdminAddPage() {
         if (result && result.features && result.features.length > 0) {
             const [lng, lat] = result.features[0].geometry.coordinates
             setCoordinatesB([lng, lat])
+            console.log(result.features[0].properties, "location B")
+            setLocationB(result.features[0].properties) // Save location B
             if (mapInstanceRefB.current) {
                 mapInstanceRefB.current.setCenter([lng, lat])
             }
@@ -125,6 +131,16 @@ function AdminAddPage() {
                 coordinateB: { long: coordinatesB[0], lat: coordinatesB[1] },
                 provider: provider,
                 status: 'pending',
+                locationA: {
+                    address: locationA.address,
+                    full_address: locationA.full_address,
+                    name: locationA.name,
+                },
+                locationB: {
+                    address: locationB.address,
+                    full_address: locationB.full_address,
+                    name: locationB.name,
+                }
             })
             Swal.fire({
                 position: "top-end",
