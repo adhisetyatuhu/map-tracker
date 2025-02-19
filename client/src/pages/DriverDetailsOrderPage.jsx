@@ -15,25 +15,20 @@ function DriverDetailsOrderPage() {
     const navigate = useNavigate()
 
     const [liveLocation, setLiveLocation] = useState("")
-
     const [data, setData] = useState({})
     const [coordinatesA, setCoordinatesA] = useState([])
     const [coordinatesB, setCoordinatesB] = useState([])
     const [mapLoaded, setMapLoaded] = useState(false)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [dataRoute, setDataRoute] = useState([])
+    const [startJourney, setStartJourney] = useState(false)
 
     const mapContainerRef = useRef()
     const mapInstanceRef = useRef()
     const directionsRef = useRef()
 
     const getLocation = () => {
-        const position = [
-            [112.738521, -7.262393],
-            [112.738191, -7.26212],
-            [112.73817, -7.260637]
-        ]
-
         let idx = 0
         const updateLocation = setInterval(() => {
             setLiveLocation({
@@ -43,16 +38,16 @@ function DriverDetailsOrderPage() {
                         type: 'Feature',
                         geometry: {
                             type: 'Point',
-                            coordinates: [position[idx][0], position[idx][1]]
+                            coordinates: [dataRoute[idx][0], dataRoute[idx][1]]
                         }
                     }
                 ]
             })
             idx++
-            if (idx >= position.length) {
+            if (idx >= dataRoute.length) {
                 clearInterval(updateLocation)
             }
-        }, 5000)
+        }, 3000)
     }
 
     const getResi = async () => {
@@ -76,7 +71,7 @@ function DriverDetailsOrderPage() {
     const handleFinish = async () => {
         try {
             await updateDoc(doc(db, 'routes', resi), {
-                status: "Done",
+                status: "done",
                 timeStamp: new Date()
             })
             navigate('/driver')
@@ -92,9 +87,33 @@ function DriverDetailsOrderPage() {
     useEffect(() => {
         if (!loading && mapContainerRef.current) {
             initializeMap()
-            getLocation()
         }
     }, [loading])
+
+    useEffect(() => {
+        if (mapLoaded && coordinatesA.length && coordinatesB.length) {
+            updateDirections(coordinatesA, coordinatesB)
+        }
+    }, [mapLoaded, coordinatesA, coordinatesB])
+
+    // useEffect(() => {
+    //     if (dataRoute.length > 0) {
+    //         const timer = setTimeout(() => {
+    //             getLocation()
+    //         }, 5000) // 5-second delay
+
+    //         return () => clearTimeout(timer) // Cleanup the timer
+    //     }
+    // }, [dataRoute])
+
+    useEffect(() => {
+        
+        if (startJourney === true) {
+            if (dataRoute.length > 0) {
+                getLocation()
+            }
+        }
+    }, [dataRoute, startJourney])
 
     useEffect(() => {
         if (!liveLocation) return;
@@ -105,6 +124,12 @@ function DriverDetailsOrderPage() {
             center: liveLocation.features[0].geometry.coordinates,
             speed: 0.5
         });
+
+        if (mapInstanceRef.current) {
+            mapInstanceRef.current.setCenter(liveLocation.features[0].geometry.coordinates)
+            mapInstanceRef.current.setZoom(17)
+        }
+
     }, [liveLocation])
 
     const initializeMap = () => {
@@ -155,12 +180,6 @@ function DriverDetailsOrderPage() {
         })
     }
 
-    useEffect(() => {
-        if (mapLoaded && coordinatesA.length && coordinatesB.length) {
-            updateDirections(coordinatesA, coordinatesB)
-        }
-    }, [mapLoaded, coordinatesA, coordinatesB])
-
     const updateDirections = (coordinatesA, coordinatesB) => {
         if (!directionsRef.current) {
             directionsRef.current = new MapboxDirections({
@@ -168,7 +187,7 @@ function DriverDetailsOrderPage() {
                 unit: 'metric',
                 profile: 'mapbox/driving',
                 controls: {
-                    inputs: true,
+                    inputs: false,
                     instructions: true,
                     profileSwitcher: false,
                 }
@@ -182,7 +201,17 @@ function DriverDetailsOrderPage() {
         }
 
         directionsRef.current.on('route', (e) => {
-            console.log(e.route)
+            const results = e.route[0].legs[0].steps
+
+            const positions = []
+            results.forEach(step => {
+                step.intersections.forEach(intersection => {
+                    positions.push(intersection.location)
+                })
+            })
+
+            console.log(positions, "Positions")
+            setDataRoute(positions)
         })
     }
 
@@ -200,8 +229,19 @@ function DriverDetailsOrderPage() {
             <p>{data.status}</p>
             <div className='relative'>
                 <div id="map-container" ref={mapContainerRef} style={{ height: '100vh', width: '100%' }} />
+                {
+                    startJourney !== true && (
+                        <button
+                            className='border absolute bottom-10 left-10 cursor-pointer px-5 rounded-full bg-blue-500 text-white py-5'
+                            onClick={() => setStartJourney(true)}
+                        >
+
+                            Start Journey
+                        </button>
+                    )
+                }
                 <button
-                    className='border absolute bottom-10 right-10 cursor-pointer'
+                    className='border absolute bottom-10 right-10 cursor-pointer px-5 rounded-full bg-blue-500 text-white py-5'
                     onClick={handleFinish}
                 >
                     Finish
