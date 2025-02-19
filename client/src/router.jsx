@@ -6,36 +6,43 @@ import SearchMapBox from './components/SearchMapBox';
 import AdminAddPage from './pages/AdminAddPage';
 import DriverHomePage from './pages/DriverHomePage';
 import DriverDetailsOrderPage from './pages/DriverDetailsOrderPage';
+import MainLayout from './layouts/MainLayout';
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <App />
+        element: <MainLayout />,
+        children: [
+            {
+                path: '/',
+                element: <App />
+            },
+            {
+                path: '/register',
+                element: <Register />
+            },
+            {
+                path: '/login',
+                element: <Login />
+            },
+            {
+                path: '/test',
+                element: <SearchMapBox />
+            },
+            {
+                path: '/admin/add',
+                element: <AdminAddPage />
+            },
+            {
+                path: '/driver',
+                element: <DriverHomePage />
+            },
+            {
+                path: '/driver/:resi',
+                element: <DriverDetailsOrderPage />
+            }
+        ]
     },
-    {
-        path: '/register',
-        element: <Register />
-    },
-    {
-        path: '/login',
-        element: <Login />
-    },
-    {
-        path: '/test',
-        element: <SearchMapBox/>
-    },
-    {
-        path: '/admin/add',
-        element: <AdminAddPage />
-    },
-    {
-        path: '/driver',
-        element: <DriverHomePage />
-    },
-    {
-        path: '/driver/:resi',
-        element: <DriverDetailsOrderPage />
-    }
 ])
 
 export default router;
