@@ -2,6 +2,7 @@ import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firesto
 import React, { use, useEffect, useState } from 'react'
 import { db } from '../config/firebase'
 import { useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 function DriverHomePage() {
     const navigate = useNavigate()
@@ -10,6 +11,7 @@ function DriverHomePage() {
     const [listRoutes, setListRoutes] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [provider, setProvider] = useState('')
     
     const getRoutesByProvider = async () => {
         setLoading(true)
@@ -17,8 +19,7 @@ function DriverHomePage() {
             setError(null)
             const q = query(
                 collection(db, 'routes'),
-                where('provider', '==', "lionparcel"),
-                where('status', '!=' ,'Done')
+                where('provider', '==', "lionparcel")
             )
             const routes = await getDocs(q)
             const routesStore = routes.docs.map((doc) => ({
@@ -39,39 +40,86 @@ function DriverHomePage() {
         getRoutesByProvider()
     }, [])
 
+    
     const navigateDetail = () => {
-        const filterroutes = listRoutes.filter((item) => item.id === resi)
-        if (filterroutes.length > 0) {
-            navigate('/driver/' + resi)
+        const test = `${provider}-${resi}`
+        const filterroutes = listRoutes.filter((item) => item.id === test)
+        if (filterroutes.length > 0 && filterroutes[0].status !== 'done') {
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Your work has been saved",
+                showConfirmButton: false,
+                timer: 1500
+            });
+            navigate('/driver/' + test)
+        } else if (filterroutes.length > 0 && filterroutes[0].status === 'done') {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Pesanan telah selesai!",
+            })
         } else {
-            console.log("Tidak ada resi atau sudah selesai")
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Pesanan tidak ditemukan!",
+            })
         }
     }
 
     return (
-        <div>
-            <h1>Driver </h1>
-            <div
-
-            >
-                <fieldset>
+        <div className=' container mx-auto flex flex-col items-center justify-center h-screen gap-10'>
+            <h1>Provider</h1>
+            <div className='flex gap-4'>
+                <div>
+                    <label>Provider</label>
+                    <select
+                        className='border w-full p-2 rounded-md'
+                        value={provider}
+                        onChange={(e) => setProvider(e.target.value)}
+                    >
+                        <option value="" hidden>Select Provider</option>
+                        <option value="gojek">Gojek</option>
+                        <option value="grab">Grab</option>
+                        <option value="bluebird">Blue Bird</option>
+                        <option value="jne">JNE</option>
+                        <option value="posindonesia">Pos Indonesia</option>
+                        <option value="tiki">TIKI</option>
+                        <option value="wahana">Wahana</option>
+                        <option value="anteraja">AnterAja</option>
+                        <option value="sicepat">SiCepat</option>
+                        <option value="lionparcel">Lion Parcel</option>
+                        <option value="rpx">RPX</option>
+                        <option value="pcp">PCP</option>
+                        <option value="firstlogistic">First Logistics</option>
+                        <option value="indahcargo">Indah Cargo</option>
+                        <option value="jetexpress">Jet Express</option>
+                        <option value="slis">SLIS</option>
+                        <option value="starcargo">Star Cargo</option>
+                        <option value="rex">REX</option>
+                    </select>
+                </div>
+                <div>
                     <label>Resi</label>
                     <input 
                         className='border p-2 rounded-md'
                         type='text'
+                        placeholder='Input Resi'
                         value={resi}
                         onChange={(e) => SetResi(e.target.value)}
                     />
-                </fieldset>
-                <fieldset>
+                </div>
+                <div>
                     <button
-                        className='bg-blue-500 text-white p-2 rounded-md'
+                        className={` bg-blue-500 text-white p-2 rounded-md ${!provider || !resi ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                        disabled={!provider || !resi}
                         type='submit'
                         onClick={navigateDetail} // Redirect to driver page
                     >
                         Submit
                     </button>
-                </fieldset>
+                </div>
             </div>
         </div>
     )
