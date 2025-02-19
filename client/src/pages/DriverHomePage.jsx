@@ -20,7 +20,7 @@ function DriverHomePage() {
             setError(null)
             const q = query(
                 collection(db, 'routes'),
-                where('provider', '==', "lionparcel")
+                where('provider', '==', "jne")
             )
             const routes = await getDocs(q)
             const routesStore = routes.docs.map((doc) => ({
@@ -44,6 +44,7 @@ function DriverHomePage() {
 
     const navigateDetail = () => {
         const test = `${provider}-${resi}`
+        console.log(test, "test")
         const filterroutes = listRoutes.filter((item) => item.id === test)
         if (filterroutes.length > 0 && filterroutes[0].status !== 'done') {
             Swal.fire({
