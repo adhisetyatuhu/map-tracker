@@ -2,6 +2,7 @@ import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firesto
 import React, { use, useEffect, useState } from 'react'
 import { db } from '../config/firebase'
 import { useNavigate } from 'react-router-dom'
+import { TruckSpeedIcon } from '../utils/icons'
 
 function DriverHomePage() {
     const navigate = useNavigate()
@@ -10,7 +11,7 @@ function DriverHomePage() {
     const [listRoutes, setListRoutes] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-    
+
     const getRoutesByProvider = async () => {
         setLoading(true)
         try {
@@ -18,7 +19,7 @@ function DriverHomePage() {
             const q = query(
                 collection(db, 'routes'),
                 where('provider', '==', "lionparcel"),
-                where('status', '!=' ,'Done')
+                where('status', '!=', 'Done')
             )
             const routes = await getDocs(q)
             const routesStore = routes.docs.map((doc) => ({
@@ -49,29 +50,29 @@ function DriverHomePage() {
     }
 
     return (
-        <div>
-            <h1>Driver </h1>
-            <div
-
-            >
-                <fieldset>
-                    <label>Resi</label>
-                    <input 
-                        className='border p-2 rounded-md'
-                        type='text'
-                        value={resi}
-                        onChange={(e) => SetResi(e.target.value)}
-                    />
-                </fieldset>
-                <fieldset>
-                    <button
-                        className='bg-blue-500 text-white p-2 rounded-md'
-                        type='submit'
-                        onClick={navigateDetail} // Redirect to driver page
-                    >
-                        Submit
-                    </button>
-                </fieldset>
+        <div className='container mx-auto'>
+            <div className='mt-20 flex flex-col items-center gap-4'>
+                <h1 className='text-2xl font-bold uppercase text-center'>Package Tracking </h1>
+                <div className='flex gap-2'>
+                    <fieldset>
+                        <input
+                            className='border p-2 rounded-md min-w-80'
+                            type='text'
+                            placeholder='Enter your tracking number'
+                            value={resi}
+                            onChange={(e) => SetResi(e.target.value)}
+                        />
+                    </fieldset>
+                    <fieldset>
+                        <button
+                            className='bg-blue-500 text-white py-2 px-4 rounded-md flex gap-2 items-center hover:bg-blue-600 hover:cursor-pointer active:bg-blue-500'
+                            type='submit'
+                            onClick={navigateDetail} // Redirect to driver page
+                        >
+                            <TruckSpeedIcon size={24} /> <span>Start Tracking</span>
+                        </button>
+                    </fieldset>
+                </div>
             </div>
         </div>
     )
