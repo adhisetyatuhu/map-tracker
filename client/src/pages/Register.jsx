@@ -73,7 +73,6 @@ function Register() {
 
     return (
         <div className="">
-            {JSON.stringify(form)}
             <div className="flex justify-between sm:flex-wrap">
                 <div className="w-full sm:w-2/3 px-4 sm:px-20 md:px-36 lg:48 xl:px-60">
                     <div className="text-xl font-extrabold py-4">Logo</div>
