@@ -107,7 +107,7 @@ function DriverDetailsOrderPage() {
     // }, [dataRoute])
 
     useEffect(() => {
-        
+
         if (startJourney === true) {
             if (dataRoute.length > 0) {
                 getLocation()
@@ -219,15 +219,26 @@ function DriverDetailsOrderPage() {
     if (error) return <p>Error loading data: {error.message}</p>
 
     return (
-        <div>
-            <h1>DriverDetailsOrderPage {resi}</h1>
-            <p>{data.coordinateA?.lat}</p>
-            <p>{data.coordinateA?.long}</p>
-            <p>{data.coordinateB?.lat}</p>
-            <p>{data.coordinateB?.long}</p>
-            <p>{data.provider}</p>
-            <p>{data.status}</p>
-            <div className='relative'>
+        <div className='container mx-auto'>
+            <h1 className='text-xl text-center py-2'><span className='font-bold'>TRACKING CODE:</span> {resi.split('-')[1]}</h1>
+
+            <div className='relative border-1 border-gray-300 p-2 bg-white'>
+                <div className='absolute z-10 right-0 py-4 px-4'>
+                    <div className=' bg-black/70 text-white p-2'>
+                        <div className='flex gap-2'>
+                            A:
+                            <span>{data.coordinateA?.lat}</span>
+                            <span>{data.coordinateA?.long}</span>
+                        </div>
+                        <div className='flex gap-2'>
+                            B:
+                            <p>{data.coordinateB?.lat}</p>
+                            <p>{data.coordinateB?.long}</p>
+                        </div>
+                        <p>{data.provider}</p>
+                        <p>{data.status}</p>
+                    </div>
+                </div>
                 <div id="map-container" ref={mapContainerRef} style={{ height: '100vh', width: '100%' }} />
                 {
                     startJourney !== true && (
