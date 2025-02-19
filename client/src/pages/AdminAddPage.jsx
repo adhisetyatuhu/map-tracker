@@ -55,7 +55,7 @@ function AdminAddPage() {
 
         mapInstanceRefA.current = new mapboxgl.Map({
             container: mapContainerRefA.current,
-            center: [106.82723932,-6.17356323],
+            center: [106.82723932, -6.17356323],
             zoom: 10,
         })
 
@@ -69,7 +69,7 @@ function AdminAddPage() {
 
         mapInstanceRefB.current = new mapboxgl.Map({
             container: mapContainerRefB.current,
-            center: [106.82723932,-6.17356323],
+            center: [106.82723932, -6.17356323],
             zoom: 10,
         })
 
@@ -99,8 +99,8 @@ function AdminAddPage() {
             // const customId = `${provider}-${Date.now()}`
             const customId = `${provider}-${generateRandomId(6)}` // Contoh ID kustom
             await setDoc(doc(db, 'routes', customId), {
-                coordinateA: {long: coordinatesA[0], lat: coordinatesA[1]}, // Contoh data koordinat
-                coordinateB: {long: coordinatesB[0], lat: coordinatesB[1]}, // Contoh data koordinat
+                coordinateA: { long: coordinatesA[0], lat: coordinatesA[1] }, // Contoh data koordinat
+                coordinateB: { long: coordinatesB[0], lat: coordinatesB[1] }, // Contoh data koordinat
                 provider: provider,
                 status: 'pending',
             })
@@ -112,11 +112,11 @@ function AdminAddPage() {
             setProvider("")
             // Reset map center
             if (mapInstanceRefA.current) {
-                mapInstanceRefA.current.setCenter([106.82723932,-6.17356323])
+                mapInstanceRefA.current.setCenter([106.82723932, -6.17356323])
                 mapInstanceRefA.current.setZoom(10)
             }
             if (mapInstanceRefB.current) {
-                mapInstanceRefB.current.setCenter([106.82723932,-6.17356323])
+                mapInstanceRefB.current.setCenter([106.82723932, -6.17356323])
                 mapInstanceRefB.current.setZoom(10)
             }
         } catch (error) {
@@ -127,15 +127,16 @@ function AdminAddPage() {
     return (
         <>
             <div>
-                <div>
-                    <div className='grid grid-cols-2 gap-4'>
-                        <form 
-                            className='flex flex-col space-y-4 border p-4 rounded-md'
+                <div className='container mx-auto'>
+                    <div className='flex gap-4'>
+                        <form
+                            className='w-1/3 h-full flex flex-col space-y-4 border border-gray-300 p-4 rounded-md'
                             onSubmit={handleSubmit}
                         >
+                            <h1 className='text-2xl font-bold'>Add Route</h1>
                             <fieldset>
-                                {JSON.stringify(coordinatesA)}
-                                <label>Point A</label>
+                                {/* {JSON.stringify(coordinatesA)} */}
+                                <label>From:</label>
                                 <SearchBox
                                     accessToken={accessToken}
                                     map={mapInstanceRefA.current}
@@ -155,8 +156,8 @@ function AdminAddPage() {
                                 />
                             </fieldset>
                             <fieldset>
-                                {JSON.stringify(coordinatesB)}
-                                <label>Point B</label>
+                                {/* {JSON.stringify(coordinatesB)} */}
+                                <label>To:</label>
                                 <SearchBox
                                     accessToken={accessToken}
                                     map={mapInstanceRefB.current}
@@ -176,9 +177,9 @@ function AdminAddPage() {
                                 />
                             </fieldset>
                             <fieldset>
-                                {JSON.stringify(provider)}
+                                {/* {JSON.stringify(provider)} */}
                                 <select
-                                    className='border w-full p-2 rounded-md'
+                                    className='border border-gray-300 shadow w-full p-2 my-4 rounded-md'
                                     value={provider}
                                     onChange={(e) => setProvider(e.target.value)}
                                 >
@@ -206,15 +207,17 @@ function AdminAddPage() {
                             <fieldset>
                                 <button
                                     type='submit'
-                                    className='bg-blue-500 text-white p-2 rounded-md'
+                                    className='bg-blue-500 text-white py-2 px-4 rounded-md hover:cursor-pointer hover:bg-blue-600 active:bg-blue-500'
                                 >
                                     Submit
                                 </button>
                             </fieldset>
                         </form>
-                        <div className='h-screen grid grid-cols-1 gap-10'>
-                            <div id="map-container-a" ref={mapContainerRefA} style={{ height: '100%', width: '100%' }} />
-                            <div id="map-container-b" ref={mapContainerRefB} style={{ height: '100%', width: '100%' }} />
+                        <div className='h-screen w-2/3'>
+                            From:
+                            <div className='border-4 border-white outline-1 outline-gray-300' id="map-container-a" ref={mapContainerRefA} style={{ height: '40%', width: '100%' }} />
+                            To:
+                            <div className='border-4 border-white outline-1 outline-gray-300' id="map-container-b" ref={mapContainerRefB} style={{ height: '40%', width: '100%' }} />
                         </div>
                     </div>
                 </div>
