@@ -9,7 +9,7 @@ import Header from './components/Header'
 import SearchMapBox from './components/SearchMapBox'
 
 function App() {
-  const { user, loading } = useContext(AuthContext)
+  const { user, role } = useContext(AuthContext)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -22,10 +22,19 @@ function App() {
     return () => unsubscribe();
   }, [user]);
 
+  useEffect(() => {
+    if (role === 'admin') {
+      navigate('/admin')
+    } else if (role === 'driver') {
+      console.log('driver worked')
+      navigate('/driver')
+    }
+  }, [role])
+
 
   return (
     <>
-      {!user ? <h1 className='text-2xl text-red-400'>Loading...</h1> :
+      {!role ? <h1 className='text-2xl text-red-400 text-center mt-8'>Loading...</h1> :
         <div>
           <div className='container mx-auto'>
             <SearchMapBox />

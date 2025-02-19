@@ -7,8 +7,18 @@ import AdminAddPage from './pages/AdminAddPage';
 import DriverHomePage from './pages/DriverHomePage';
 import DriverDetailsOrderPage from './pages/DriverDetailsOrderPage';
 import MainLayout from './layouts/MainLayout';
+import AdminLayout from './layouts/AdminLayout';
+import AdminHome from './pages/AdminHome';
 
 const router = createBrowserRouter([
+    {
+        path: '/register',
+        element: <Register />
+    },
+    {
+        path: '/login',
+        element: <Login />
+    },
     {
         path: '/',
         element: <MainLayout />,
@@ -18,20 +28,8 @@ const router = createBrowserRouter([
                 element: <App />
             },
             {
-                path: '/register',
-                element: <Register />
-            },
-            {
-                path: '/login',
-                element: <Login />
-            },
-            {
                 path: '/test',
                 element: <SearchMapBox />
-            },
-            {
-                path: '/admin/add',
-                element: <AdminAddPage />
             },
             {
                 path: '/driver',
@@ -43,6 +41,20 @@ const router = createBrowserRouter([
             }
         ]
     },
+    {
+        path: '/admin',
+        element: <AdminLayout />,
+        children: [
+            {
+                path: '/admin/',
+                element: <AdminHome />
+            },
+            {
+                path: '/admin/add',
+                element: <AdminAddPage />
+            }
+        ]
+    }
 ])
 
 export default router;

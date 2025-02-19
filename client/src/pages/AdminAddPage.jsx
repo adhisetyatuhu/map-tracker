@@ -130,7 +130,7 @@ function AdminAddPage() {
                 <div className='container mx-auto'>
                     <div className='flex gap-4'>
                         <form
-                            className='w-1/3 h-full flex flex-col space-y-4 border border-gray-300 p-4 rounded-md'
+                            className='w-1/3 h-full lg:mt-6 flex flex-col space-y-4 border border-gray-300 bg-white p-4 rounded-md'
                             onSubmit={handleSubmit}
                         >
                             <h1 className='text-2xl font-bold'>Add Route</h1>
@@ -215,7 +215,7 @@ function AdminAddPage() {
                         </form>
                         <div className='h-screen w-2/3'>
                             From:
-                            <div className='border-4 border-white outline-1 outline-gray-300' id="map-container-a" ref={mapContainerRefA} style={{ height: '40%', width: '100%' }} />
+                            <div className='border-4 border-white outline-1 outline-gray-300 mb-2' id="map-container-a" ref={mapContainerRefA} style={{ height: '40%', width: '100%' }} />
                             To:
                             <div className='border-4 border-white outline-1 outline-gray-300' id="map-container-b" ref={mapContainerRefB} style={{ height: '40%', width: '100%' }} />
                         </div>
