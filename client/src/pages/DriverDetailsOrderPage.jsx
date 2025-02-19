@@ -1,5 +1,5 @@
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { db } from '../config/firebase'
 
@@ -7,10 +7,12 @@ import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
 import MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions'
 import '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css'
+import { AuthContext } from '../context/AuthContext'
 
 const accessToken = import.meta.env.VITE_API_KEY_MapBox
 
 function DriverDetailsOrderPage() {
+    const { user, loading, profile } = useContext(AuthContext)
     const { resi } = useParams()
     const navigate = useNavigate()
 
@@ -19,7 +21,7 @@ function DriverDetailsOrderPage() {
     const [coordinatesA, setCoordinatesA] = useState([])
     const [coordinatesB, setCoordinatesB] = useState([])
     const [mapLoaded, setMapLoaded] = useState(false)
-    const [loading, setLoading] = useState(true)
+    const [loadingResi, setLoadingResi] = useState(true)
     const [error, setError] = useState(null)
     const [dataRoute, setDataRoute] = useState([])
     const [startJourney, setStartJourney] = useState(false)
@@ -28,13 +30,23 @@ function DriverDetailsOrderPage() {
     const mapInstanceRef = useRef()
     const directionsRef = useRef()
 
+    useEffect(() => {
+        if (!loading) {
+            if (!user) {
+                navigate('/login')
+            } else if (profile?.role !== 'driver') {
+                navigate('/admin')
+            }
+        }
+    }, [user, loading, profile])
+
     const getLocation = () => {
         let idx = 0
         const updateLocation = setInterval(() => {
             setLiveLocation([dataRoute[idx][0], dataRoute[idx][1]])
-            if (idx === dataRoute.length - 1) {
-                setLiveLocation([112.73845715, -7.257471])
-            }
+            // if (idx === dataRoute.length - 1) {
+            //     setLiveLocation([112.73845715, -7.257471])
+            // }
             idx++
             if (idx >= dataRoute.length) {
                 clearInterval(updateLocation)
@@ -44,7 +56,7 @@ function DriverDetailsOrderPage() {
 
     const getResi = async () => {
         try {
-            setLoading(true)
+            setLoadingResi(true)
             const track = await getDoc(doc(db, 'routes', resi))
             const trackData = track.data()
             if (trackData) {
@@ -56,7 +68,7 @@ function DriverDetailsOrderPage() {
             console.log(error)
             setError(error)
         } finally {
-            setLoading(false)
+            setLoadingResi(false)
         }
     }
 
@@ -69,10 +81,25 @@ function DriverDetailsOrderPage() {
                 dataRoute[dataRoute.length-1][1] === liveLocation[1]
             )
             await updateDoc(doc(db, 'routes', resi), {
-                status: "pending",
+                status: "done",
                 timeStamp: new Date()
             })
-            // navigate('/driver')
+            const driverDocRef = doc(db, 'driver', profile.id)
+            const driverDoc = await getDoc(driverDocRef)
+            const driverData = driverDoc.data()
+
+            const newHistory = {
+                ...driverData.history,
+                [resi]: {
+                    lastPositionDriver: [liveLocation[0], liveLocation[1]],
+                    timeStamp: new Date()
+                }
+            }
+
+            await updateDoc(driverDocRef, {
+                history: newHistory
+            })
+            navigate('/driver')
         } catch (error) {
             console.log(error)
         }
@@ -83,10 +110,10 @@ function DriverDetailsOrderPage() {
     }, [resi])
 
     useEffect(() => {
-        if (!loading && mapContainerRef.current) {
+        if (!loadingResi && mapContainerRef.current) {
             initializeMap()
         }
-    }, [loading])
+    }, [loadingResi])
 
     useEffect(() => {
         if (mapLoaded && coordinatesA.length && coordinatesB.length) {
@@ -116,17 +143,7 @@ function DriverDetailsOrderPage() {
                     }
                 }
             ]
-        });
-
-        // mapInstanceRef.current.flyTo({
-        //     center: liveLocation.features[0].geometry.coordinates,
-        //     speed: 0.5
-        // });
-
-        // if (mapInstanceRef.current) {
-        //     mapInstanceRef.current.setCenter(liveLocation.features[0].geometry.coordinates)
-        //     mapInstanceRef.current.setZoom(17)
-        // }
+        })
 
     }, [liveLocation])
 
@@ -211,8 +228,23 @@ function DriverDetailsOrderPage() {
         })
     }
 
-    if (loading) return <p>Loading...</p>
-    if (error) return <p>Error loading data: {error.message}</p>
+    if (loadingResi) return <p>Loading Resi...</p>
+
+    // if (loading) {
+    //     return (
+    //         <div className='container mx-auto flex justify-center items-center h-screen'>
+    //             <h1>Loading...</h1>
+    //         </div>
+    //     )
+    // }
+
+    if (error) {
+        return (
+            <div className='container mx-auto flex justify-center items-center h-screen'>
+                <h1>Error: {error.message}</h1>
+            </div>
+        )
+    }
 
     return (
         <div className='container mx-auto'>

@@ -1,52 +1,83 @@
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
-import React, { use, useEffect, useState } from 'react'
+import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore'
+import React, { useContext, useEffect, useState } from 'react'
 import { db } from '../config/firebase'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { TruckSpeedIcon } from '../utils/icons'
+import { AuthContext } from '../context/AuthContext'
 
 function DriverHomePage() {
+    const { user, loading, profile } = useContext(AuthContext)
     const navigate = useNavigate()
-    const [resi, SetResi] = useState('')
+    const [trackCode, setTrackCode] = useState('')
 
     const [listRoutes, setListRoutes] = useState([])
-    const [loading, setLoading] = useState(true)
+    const [loadingRoutes, setLoadingRoutes] = useState(true)
     const [error, setError] = useState(null)
-    const [provider, setProvider] = useState('')
 
     const getRoutesByProvider = async () => {
-        setLoading(true)
+        if (!profile?.provider) {
+            setError(new Error('Provider is not defined'))
+            setLoadingRoutes(false)
+            return
+        }
+
+        setLoadingRoutes(true)
         try {
             setError(null)
             const q = query(
                 collection(db, 'routes'),
-                where('provider', '==', "jne")
+                where('provider', '==', profile.provider)
             )
             const routes = await getDocs(q)
             const routesStore = routes.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data(),
             }))
-            console.log(routesStore)
             setListRoutes(routesStore)
         } catch (error) {
             console.log(error)
             setError(error)
         } finally {
-            setLoading(false)
+            setLoadingRoutes(false)
         }
     }
 
     useEffect(() => {
-        getRoutesByProvider()
-    }, [])
+        if (profile) {
+            getRoutesByProvider()
+        }
+    }, [profile])
 
+    const navigateDetail = async () => {
+        if (!profile?.provider) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Provider is not defined!",
+            })
+            return
+        }
 
-    const navigateDetail = () => {
-        const test = `${provider}-${resi}`
-        console.log(test, "test")
-        const filterroutes = listRoutes.filter((item) => item.id === test)
+        const resi = `${profile.provider}-${trackCode}`
+        const filterroutes = listRoutes.filter((item) => item.id === resi)
         if (filterroutes.length > 0 && filterroutes[0].status !== 'done') {
+            const driverDocRef = doc(db, 'driver', profile.id)
+            const driverDoc = await getDoc(driverDocRef)
+            const driverData = driverDoc.data()
+
+            const newHistory = {
+                ...driverData.history,
+                [resi]: {
+                    lastPositionDriver: [],
+                    timeStamp: ""
+                }
+            }
+
+            await updateDoc(driverDocRef, {
+                history: newHistory
+            })
+
             Swal.fire({
                 position: "top-end",
                 icon: "success",
@@ -54,7 +85,7 @@ function DriverHomePage() {
                 showConfirmButton: false,
                 timer: 1500
             });
-            navigate('/driver/' + test)
+            navigate('/driver/' + resi)
         } else if (filterroutes.length > 0 && filterroutes[0].status === 'done') {
             Swal.fire({
                 icon: "error",
@@ -70,53 +101,50 @@ function DriverHomePage() {
         }
     }
 
+    useEffect(() => {
+        if (!loading) {
+            if (!user) {
+                navigate('/login')
+            } else if (profile?.role !== 'driver') {
+                navigate('/admin')
+            }
+        }
+    }, [user, loading, profile])
+
+    if (loading || loadingRoutes) {
+        return (
+            <div className='container mx-auto flex justify-center items-center h-screen'>
+                <h1>Loading...</h1>
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className='container mx-auto flex justify-center items-center h-screen'>
+                <h1>Error: {error.message}</h1>
+            </div>
+        )
+    }
+
     return (
         <div className='container mx-auto flex flex-col items-center justify-center gap-10 lg:mt-40'>
             <h1 className='text-3xl font-bold'>ALL-IN-ONE PACKAGE TRACKING</h1>
             <h3>Support 2500+ carriers and 190+ airlines worldwide</h3>
             <div className='flex gap-4'>
                 <div>
-                    {/* <label>Provider</label> */}
-                    <select
-                        className='border border-blue-400 w-full p-2 h-12 rounded-md'
-                        value={provider}
-                        onChange={(e) => setProvider(e.target.value)}
-                    >
-                        <option value="" hidden>Select Provider</option>
-                        <option value="gojek">Gojek</option>
-                        <option value="grab">Grab</option>
-                        <option value="bluebird">Blue Bird</option>
-                        <option value="jne">JNE</option>
-                        <option value="posindonesia">Pos Indonesia</option>
-                        <option value="tiki">TIKI</option>
-                        <option value="wahana">Wahana</option>
-                        <option value="anteraja">AnterAja</option>
-                        <option value="sicepat">SiCepat</option>
-                        <option value="lionparcel">Lion Parcel</option>
-                        <option value="rpx">RPX</option>
-                        <option value="pcp">PCP</option>
-                        <option value="firstlogistic">First Logistics</option>
-                        <option value="indahcargo">Indah Cargo</option>
-                        <option value="jetexpress">Jet Express</option>
-                        <option value="slis">SLIS</option>
-                        <option value="starcargo">Star Cargo</option>
-                        <option value="rex">REX</option>
-                    </select>
-                </div>
-                <div>
-                    {/* <label>Resi</label> */}
                     <input
                         className='border border-blue-500 p-2 h-12 rounded-md'
                         type='text'
                         placeholder='Enter your tracking code'
-                        value={resi}
-                        onChange={(e) => SetResi(e.target.value)}
+                        value={trackCode}
+                        onChange={(e) => setTrackCode(e.target.value)}
                     />
                 </div>
                 <div>
                     <button
-                        className={`  text-white py-2 px-4 h-12 rounded-md flex gap-2 items-center ${!provider || !resi ? 'cursor-not-allowed bg-blue-500/60' : 'cursor-pointer bg-blue-500'}`}
-                        disabled={!provider || !resi}
+                        className={`  text-white py-2 px-4 h-12 rounded-md flex gap-2 items-center ${!profile?.provider || !trackCode ? 'cursor-not-allowed bg-blue-500/60' : 'cursor-pointer bg-blue-500'}`}
+                        disabled={!profile?.provider || !trackCode}
                         type='submit'
                         onClick={navigateDetail} // Redirect to driver page
                     >

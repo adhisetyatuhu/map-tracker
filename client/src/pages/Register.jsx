@@ -53,7 +53,7 @@ function Register() {
             console.info(userCredential);
 
             // create profile
-            const userRef = collection(db, "Driver");
+            const userRef = collection(db, "driver");
             await setDoc(doc(userRef, userCredential.user.uid), {
                 email: form.email,
                 firstName: form.firstName,
@@ -61,7 +61,8 @@ function Register() {
                 phoneNumber: form.phone,
                 provider: form.provider,
                 role: 'driver',
-                history: [],
+                history: {},
+                id: userCredential.user.uid
             })
             navigate('/login');
 
