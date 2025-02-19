@@ -9,18 +9,22 @@ import Header from './components/Header'
 import SearchMapBox from './components/SearchMapBox'
 
 function App() {
-  const { user, loading } = useContext(AuthContext)
+  const { user, loading, profile } = useContext(AuthContext)
   const navigate = useNavigate()
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         navigate('/login')
+      } else if (profile?.role === 'driver') {
+        navigate('/driver')
+      } else if (profile?.role === 'admin') {
+        navigate('/admin')
       }
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, [user, profile]);
 
 
   return (
