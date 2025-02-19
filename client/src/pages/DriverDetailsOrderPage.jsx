@@ -239,7 +239,7 @@ function DriverDetailsOrderPage() {
                         <p>{data.status}</p>
                     </div>
                 </div>
-                <div id="map-container" ref={mapContainerRef} style={{ height: '100vh', width: '100%' }} />
+                <div id="map-container" ref={mapContainerRef} style={{ height: '80vh', width: '100%' }} />
                 {
                     startJourney !== true && (
                         <button
