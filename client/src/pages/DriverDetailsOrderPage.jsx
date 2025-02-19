@@ -14,7 +14,7 @@ function DriverDetailsOrderPage() {
     const { resi } = useParams()
     const navigate = useNavigate()
 
-    const [liveLocation, setLiveLocation] = useState("")
+    const [liveLocation, setLiveLocation] = useState([])
     const [data, setData] = useState({})
     const [coordinatesA, setCoordinatesA] = useState([])
     const [coordinatesB, setCoordinatesB] = useState([])
@@ -31,23 +31,15 @@ function DriverDetailsOrderPage() {
     const getLocation = () => {
         let idx = 0
         const updateLocation = setInterval(() => {
-            setLiveLocation({
-                type: 'FeatureCollection',
-                features: [
-                    {
-                        type: 'Feature',
-                        geometry: {
-                            type: 'Point',
-                            coordinates: [dataRoute[idx][0], dataRoute[idx][1]]
-                        }
-                    }
-                ]
-            })
+            setLiveLocation([dataRoute[idx][0], dataRoute[idx][1]])
+            if (idx === dataRoute.length - 1) {
+                setLiveLocation([112.73845715, -7.257471])
+            }
             idx++
             if (idx >= dataRoute.length) {
                 clearInterval(updateLocation)
             }
-        }, 3000)
+        }, 200)
     }
 
     const getResi = async () => {
@@ -70,11 +62,17 @@ function DriverDetailsOrderPage() {
 
     const handleFinish = async () => {
         try {
+            console.log(dataRoute[dataRoute.length-1][0], dataRoute[dataRoute.length-1][1], "dataRouteFinish")
+            console.log(liveLocation[0], liveLocation[1], "liveLocationFinish")
+            console.log(
+                dataRoute[dataRoute.length-1][0] === liveLocation[0] &&
+                dataRoute[dataRoute.length-1][1] === liveLocation[1]
+            )
             await updateDoc(doc(db, 'routes', resi), {
-                status: "done",
+                status: "pending",
                 timeStamp: new Date()
             })
-            navigate('/driver')
+            // navigate('/driver')
         } catch (error) {
             console.log(error)
         }
@@ -96,18 +94,7 @@ function DriverDetailsOrderPage() {
         }
     }, [mapLoaded, coordinatesA, coordinatesB])
 
-    // useEffect(() => {
-    //     if (dataRoute.length > 0) {
-    //         const timer = setTimeout(() => {
-    //             getLocation()
-    //         }, 5000) // 5-second delay
-
-    //         return () => clearTimeout(timer) // Cleanup the timer
-    //     }
-    // }, [dataRoute])
-
     useEffect(() => {
-        
         if (startJourney === true) {
             if (dataRoute.length > 0) {
                 getLocation()
@@ -116,19 +103,30 @@ function DriverDetailsOrderPage() {
     }, [dataRoute, startJourney])
 
     useEffect(() => {
-        if (!liveLocation) return;
+        if (liveLocation.length === 0) return;
 
-        mapInstanceRef.current.getSource('market-truck').setData(liveLocation);
-
-        mapInstanceRef.current.flyTo({
-            center: liveLocation.features[0].geometry.coordinates,
-            speed: 0.5
+        mapInstanceRef.current.getSource('market-truck').setData({
+            type: 'FeatureCollection',
+            features: [
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: liveLocation
+                    }
+                }
+            ]
         });
 
-        if (mapInstanceRef.current) {
-            mapInstanceRef.current.setCenter(liveLocation.features[0].geometry.coordinates)
-            mapInstanceRef.current.setZoom(17)
-        }
+        // mapInstanceRef.current.flyTo({
+        //     center: liveLocation.features[0].geometry.coordinates,
+        //     speed: 0.5
+        // });
+
+        // if (mapInstanceRef.current) {
+        //     mapInstanceRef.current.setCenter(liveLocation.features[0].geometry.coordinates)
+        //     mapInstanceRef.current.setZoom(17)
+        // }
 
     }, [liveLocation])
 
@@ -144,7 +142,7 @@ function DriverDetailsOrderPage() {
         mapInstanceRef.current.on("load", () => {
             setMapLoaded(true)
 
-            mapInstanceRef.current.loadImage("https://docs.mapbox.com/mapbox-gl-js/assets/cat.png", (error, image) => {
+            mapInstanceRef.current.loadImage("https://res.cloudinary.com/jeannede/image/upload/v1739967955/pggjhdjlf6tfvjzo0kfz.png", (error, image) => {
                 if (error) throw error
 
                 mapInstanceRef.current.addImage("truck", image)
@@ -159,7 +157,7 @@ function DriverDetailsOrderPage() {
                                 type: "Feature",
                                 geometry: {
                                     type: "Point",
-                                    coordinates: [112.738521, -7.262393] // Example: Jakarta
+                                    coordinates: coordinatesA // Example: Jakarta
                                 }
                             }
                         ]
@@ -173,7 +171,7 @@ function DriverDetailsOrderPage() {
                     source: "market-truck",
                     layout: {
                         "icon-image": "truck", // Built-in Mapbox truck/market icon
-                        "icon-size": 0.25, // Adjust the size
+                        "icon-size": 0.5, // Adjust the size
                     }
                 });
             })
@@ -209,8 +207,6 @@ function DriverDetailsOrderPage() {
                     positions.push(intersection.location)
                 })
             })
-
-            console.log(positions, "Positions")
             setDataRoute(positions)
         })
     }
