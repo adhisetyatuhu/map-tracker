@@ -35,6 +35,7 @@ function Register() {
         firstName: '',
         lastName: '',
         phone: '',
+        provider: '',
         password: '',
         passwordConfirm: '',
     });
@@ -52,13 +53,15 @@ function Register() {
             console.info(userCredential);
 
             // create profile
-            const userRef = collection(db, "users");
+            const userRef = collection(db, "Driver");
             await setDoc(doc(userRef, userCredential.user.uid), {
                 email: form.email,
                 firstName: form.firstName,
                 lastName: form.lastName,
-                phone: form.phone,
-                roles: 'grab',
+                phoneNumber: form.phone,
+                provider: form.provider,
+                role: 'driver',
+                history: [],
             })
             navigate('/login');
 
@@ -69,6 +72,7 @@ function Register() {
 
     return (
         <div className="">
+            {JSON.stringify(form)}
             <div className="flex justify-between sm:flex-wrap">
                 <div className="w-full sm:w-2/3 px-4 sm:px-20 md:px-36 lg:48 xl:px-60">
                     <div className="text-xl font-extrabold py-4">Logo</div>
@@ -110,6 +114,33 @@ function Register() {
                             value={form.phone}
                             onChange={handleChange}
                         />
+                        <select
+                            className="border border-gray-400 py-1 px-2"
+                            name="provider"
+                            placeholder="Phone number"
+                            value={form.provider}
+                            onChange={handleChange}
+                        >
+                            <option value="" hidden>Select Provider</option>
+                            <option value="gojek">Gojek</option>
+                            <option value="grab">Grab</option>
+                            <option value="bluebird">Blue Bird</option>
+                            <option value="jne">JNE</option>
+                            <option value="posindonesia">Pos Indonesia</option>
+                            <option value="tiki">TIKI</option>
+                            <option value="wahana">Wahana</option>
+                            <option value="anteraja">AnterAja</option>
+                            <option value="sicepat">SiCepat</option>
+                            <option value="lionparcel">Lion Parcel</option>
+                            <option value="rpx">RPX</option>
+                            <option value="pcp">PCP</option>
+                            <option value="firstlogistic">First Logistics</option>
+                            <option value="indahcargo">Indah Cargo</option>
+                            <option value="jetexpress">Jet Express</option>
+                            <option value="slis">SLIS</option>
+                            <option value="starcargo">Star Cargo</option>
+                            <option value="rex">REX</option>
+                        </select>
                         <input
                             className="border border-gray-400 py-1 px-2"
                             type="password"

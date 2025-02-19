@@ -70,8 +70,9 @@ function DriverHomePage() {
     }
 
     return (
-        <div className='container mx-auto flex flex-col items-center justify-center h-screen gap-10'>
+        <div className='container mx-auto flex flex-col items-center justify-center gap-10 lg:mt-40'>
             <h1 className='text-3xl font-bold'>ALL-IN-ONE PACKAGE TRACKING</h1>
+            <h3>Support 2500+ carriers and 190+ airlines worldwide</h3>
             <div className='flex gap-4'>
                 <div>
                     {/* <label>Provider</label> */}
