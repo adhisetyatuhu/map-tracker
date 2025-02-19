@@ -65,11 +65,11 @@ function DriverHomePage() {
                     </fieldset>
                     <fieldset>
                         <button
-                            className='bg-blue-500 text-white py-2 px-4 rounded-md flex gap-2 items-center hover:bg-blue-600 hover:cursor-pointer active:bg-blue-500'
+                            className='bg-blue-800 text-white py-2 px-4 rounded-md flex gap-2 items-center hover:bg-blue-600 hover:cursor-pointer active:bg-blue-500'
                             type='submit'
                             onClick={navigateDetail} // Redirect to driver page
                         >
-                            <TruckSpeedIcon size={24} /> <span>Start Tracking</span>
+                            <TruckSpeedIcon size={24} /> <span>Start Delivery</span>
                         </button>
                     </fieldset>
                 </div>
