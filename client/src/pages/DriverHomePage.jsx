@@ -3,6 +3,7 @@ import React, { use, useEffect, useState } from 'react'
 import { db } from '../config/firebase'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import { TruckSpeedIcon } from '../utils/icons'
 
 function DriverHomePage() {
     const navigate = useNavigate()
@@ -12,7 +13,7 @@ function DriverHomePage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [provider, setProvider] = useState('')
-    
+
     const getRoutesByProvider = async () => {
         setLoading(true)
         try {
@@ -40,7 +41,7 @@ function DriverHomePage() {
         getRoutesByProvider()
     }, [])
 
-    
+
     const navigateDetail = () => {
         const test = `${provider}-${resi}`
         const filterroutes = listRoutes.filter((item) => item.id === test)
@@ -69,13 +70,13 @@ function DriverHomePage() {
     }
 
     return (
-        <div className=' container mx-auto flex flex-col items-center justify-center h-screen gap-10'>
-            <h1>Provider</h1>
+        <div className='container mx-auto flex flex-col items-center justify-center h-screen gap-10'>
+            <h1 className='text-3xl font-bold'>ALL-IN-ONE PACKAGE TRACKING</h1>
             <div className='flex gap-4'>
                 <div>
-                    <label>Provider</label>
+                    {/* <label>Provider</label> */}
                     <select
-                        className='border w-full p-2 rounded-md'
+                        className='border border-blue-400 w-full p-2 h-12 rounded-md'
                         value={provider}
                         onChange={(e) => setProvider(e.target.value)}
                     >
@@ -101,23 +102,24 @@ function DriverHomePage() {
                     </select>
                 </div>
                 <div>
-                    <label>Resi</label>
-                    <input 
-                        className='border p-2 rounded-md'
+                    {/* <label>Resi</label> */}
+                    <input
+                        className='border border-blue-500 p-2 h-12 rounded-md'
                         type='text'
-                        placeholder='Input Resi'
+                        placeholder='Enter your tracking code'
                         value={resi}
                         onChange={(e) => SetResi(e.target.value)}
                     />
                 </div>
                 <div>
                     <button
-                        className={` bg-blue-500 text-white p-2 rounded-md ${!provider || !resi ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                        className={`  text-white py-2 px-4 h-12 rounded-md flex gap-2 items-center ${!provider || !resi ? 'cursor-not-allowed bg-blue-500/60' : 'cursor-pointer bg-blue-500'}`}
                         disabled={!provider || !resi}
                         type='submit'
                         onClick={navigateDetail} // Redirect to driver page
                     >
-                        Submit
+                        <TruckSpeedIcon size={24} />
+                        <span className='text-nowrap'>Start Delivery</span>
                     </button>
                 </div>
             </div>
