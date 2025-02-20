@@ -62,41 +62,54 @@ function RouteRow({ trackingCode, provider, addressA, addressB, status, driver, 
     }, [provider])
 
     return (
-        <tr className="hover:bg-gray-100">
-            <td className="border-b py-2 px-4 border-gray-300">
-                <div className="font-bold">{trackingCode}</div>
-                <div className="text-gray-600 text-sm">{provider}</div>
-            </td>
-            <td className="border-b py-2 px-4 border-gray-300">
-                <div className="text-gray-600 text-sm">{addressA}</div>
-                <div className="text-gray-600 text-sm">{addressB}</div>
-            </td>
-            <td className="border-b py-2 px-4 border-gray-300">{status}</td>
-            <td className="border-b py-2 px-4 border-gray-300">{driverMatch.email}</td>
-            <td className="border-b py-2 px-4 border-gray-300">
-                <button 
-                    className="border border-blue-500 text-sm text-blue-600 hover:text-white flex gap-2 items-center px-2 py-1 rounded group hover:bg-blue-500 hover:cursor-pointer"
-                    onClick={navigateDetail}
-                >
-                    <MapIcon className="fill-blue-500 group-hover:fill-white" size={16} /> 
-                    <span>Detail</span>
-                </button>
-            </td>
-        </tr>
+        <>
+            {
+                loadingDrivers ? <tr><td colSpan="5" className="text-center py-3">Loading...</td></tr> :
+                    <tr className="hover:bg-gray-100">
+                        <td className="border-b py-2 px-4 border-gray-300">
+                            <div className="font-bold">{trackingCode}</div>
+                            <div className="text-gray-600 text-sm">{provider}</div>
+                        </td>
+                        <td className="border-b py-2 px-4 border-gray-300">
+                            <div className="text-gray-600 text-sm">{addressA}</div>
+                            <div className="text-gray-600 text-sm">{addressB}</div>
+                        </td>
+                        <td className="border-b py-2 px-4 border-gray-300">{status}</td>
+                        <td className="border-b py-2 px-4 border-gray-300">{driverMatch.email}</td>
+                        <td className="border-b py-2 px-4 border-gray-300">
+                            <button
+                                className="border border-blue-500 text-sm text-blue-600 hover:text-white flex gap-2 items-center px-2 py-1 rounded group hover:bg-blue-500 hover:cursor-pointer"
+                                onClick={navigateDetail}
+                            >
+                                <MapIcon className="fill-blue-500 group-hover:fill-white" size={16} />
+                                <span>Detail</span>
+                            </button>
+                        </td>
+                    </tr>
+            }
+        </>
     );
 }
 
 export default function AdminHome() {
     const { user } = useContext(AuthContext)
     const [routes, setRoutes] = useState([])
+    const [loading, setLoading] = useState(true)
 
     const fetchRoutes = async () => {
+        setLoading(true)
         // Fetch tracking history from API
-        const q = query(collection(db, "routes"))
-        const querySnapshot = await getDocs(q)
-        setRoutes(querySnapshot.docs.map(doc => {
-            return { ...doc.data(), id: doc.id }
-        }))
+        try {
+            const q = query(collection(db, "routes"))
+            const querySnapshot = await getDocs(q)
+            setRoutes(querySnapshot.docs.map(doc => {
+                return { ...doc.data(), id: doc.id }
+            }))
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
     }
     useEffect(() => {
         fetchRoutes()
@@ -116,9 +129,12 @@ export default function AdminHome() {
                     </tr>
                 </thead>
                 <tbody>
-                    {routes.map((route, index) => (
-                        <RouteRow key={index} trackingCode={route.id.split('-')[1]} provider={route.provider} addressA={route.locationA.address} addressB={route.locationB.address} status={route.status} driver={route.driver} id={route.id} />
-                    ))}
+                    {
+                        loading ? <tr><td colSpan="5" className="text-center py-3">Loading...</td></tr> :
+                            routes.map((route, index) => (
+                                <RouteRow key={index} trackingCode={route.id.split('-')[1]} provider={route.provider} addressA={route.locationA.address} addressB={route.locationB.address} status={route.status} driver={route.driver} id={route.id} />
+                            ))
+                    }
 
                 </tbody>
             </table>
