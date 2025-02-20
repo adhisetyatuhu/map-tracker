@@ -5,13 +5,24 @@ import { use, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-function RouteRow({ trackingCode, provider, addressA, addressB, status, driver, id }) {
+function RouteRow({ trackingCode, provider, addressA, addressB, status, id }) {
+    const { user, loading, profile } = useContext(AuthContext)
     const navigate = useNavigate()
     const [drivers, setDrivers] = useState([])
     const [loadingDrivers, setLoadingDrivers] = useState(true)
     const [errorDrivers, setErrorDrivers] = useState(null)
 
     const [driverMatch, setDriverMatch] = useState('')
+
+    useEffect(() => {
+        if (!loading) {
+            if (!user) {
+                navigate('/login')
+            } else if (profile?.role !== 'admin') {
+                navigate('/driver')
+            }
+        }
+    }, [user, loading, profile])
 
     const navigateDetail = () => {
         if (status === 'done' && driverMatch) {

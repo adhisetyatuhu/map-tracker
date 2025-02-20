@@ -122,9 +122,7 @@ function Register() {
                             onChange={handleChange}
                         >
                             <option value="" hidden>Select Provider</option>
-                            <option value="gojek">Gojek</option>
-                            <option value="grab">Grab</option>
-                            <option value="bluebird">Blue Bird</option>
+                            <option value="jnt">J&T</option>
                             <option value="jne">JNE</option>
                             <option value="posindonesia">Pos Indonesia</option>
                             <option value="tiki">TIKI</option>
@@ -132,14 +130,8 @@ function Register() {
                             <option value="anteraja">AnterAja</option>
                             <option value="sicepat">SiCepat</option>
                             <option value="lionparcel">Lion Parcel</option>
-                            <option value="rpx">RPX</option>
-                            <option value="pcp">PCP</option>
                             <option value="firstlogistic">First Logistics</option>
                             <option value="indahcargo">Indah Cargo</option>
-                            <option value="jetexpress">Jet Express</option>
-                            <option value="slis">SLIS</option>
-                            <option value="starcargo">Star Cargo</option>
-                            <option value="rex">REX</option>
                         </select>
                         <input
                             className="border border-gray-400 py-1 px-2"
