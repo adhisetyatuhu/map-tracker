@@ -2,6 +2,7 @@ import { doc, getDoc, updateDoc, where } from 'firebase/firestore'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { db } from '../config/firebase'
+import Swal from 'sweetalert2'
 
 import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
@@ -26,7 +27,6 @@ function DriverDetailsOrderPage() {
     const [dataRoute, setDataRoute] = useState([])
     const [startJourney, setStartJourney] = useState(false)
 
-    
     const [route, setRoute] = useState([])
     const [loadingRoutes, setLoadingRoutes] = useState(true)
 
@@ -76,9 +76,6 @@ function DriverDetailsOrderPage() {
         let idx = 0
         const updateLocation = setInterval(() => {
             setLiveLocation([dataRoute[idx][0], dataRoute[idx][1]])
-            // if (idx === dataRoute.length - 1) {
-            //     setLiveLocation([112.73845715, -7.257471])
-            // }
             idx++
             if (idx >= dataRoute.length) {
                 clearInterval(updateLocation)
@@ -106,42 +103,60 @@ function DriverDetailsOrderPage() {
 
     const handleFinish = async () => {
         try {
-            console.log(dataRoute[dataRoute.length-1][0], dataRoute[dataRoute.length-1][1], "dataRouteFinish")
-            console.log(liveLocation[0], liveLocation[1], "liveLocationFinish")
-            console.log(
-                dataRoute[dataRoute.length-1][0] === liveLocation[0] &&
-                dataRoute[dataRoute.length-1][1] === liveLocation[1]
-            )
-            await updateDoc(doc(db, 'routes', resi), {
-                status: "done",
-                timeStamp: new Date()
-            })
-            const driverDocRef = doc(db, 'driver', profile.id)
-            const driverDoc = await getDoc(driverDocRef)
-            const driverData = driverDoc.data()
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const isArrived = dataRoute[dataRoute.length - 1][0] === liveLocation[0] && dataRoute[dataRoute.length - 1][1] === liveLocation[1];
+                    const message = isArrived ? "Your driver has arrived at the destination" : "Your driver has not arrived at the destination";
 
-            // Flatten dataRoute if it contains nested arrays
-            const flattenedDataRoute = dataRoute.map(route => ({
-                long: route[0],
-                lat: route[1]
-            }))
+                    await updateDoc(doc(db, 'routes', resi), {
+                        status: "done",
+                        timeStamp: new Date(),
+                        message: message
+                    });
 
-            const newHistory = {
-                ...driverData.history,
-                [resi]: {
-                    historyRoutesDriver: flattenedDataRoute, // Use flattened dataRoute
-                    timeStamp: new Date()
+                    const driverDocRef = doc(db, 'driver', profile.id);
+                    const driverDoc = await getDoc(driverDocRef);
+                    const driverData = driverDoc.data();
+
+                    const flattenedDataRoute = dataRoute.map(route => ({
+                        long: route[0],
+                        lat: route[1]
+                    }));
+
+                    const newHistory = {
+                        ...driverData.history,
+                        [resi]: {
+                            historyRoutesDriver: flattenedDataRoute,
+                            timeStamp: new Date(),
+                            message: message
+                        }
+                    };
+
+                    await updateDoc(driverDocRef, {
+                        history: newHistory
+                    });
+
+                    navigate('/driver');
+
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Your file has been deleted.",
+                        icon: "success"
+                    });
                 }
-            }
-
-            await updateDoc(driverDocRef, {
-                history: newHistory
-            })
-            navigate('/driver')
+            });
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
 
     useEffect(() => {
         getResi()
@@ -240,7 +255,7 @@ function DriverDetailsOrderPage() {
                 unit: 'metric',
                 profile: 'mapbox/driving',
                 controls: {
-                    inputs: false,
+                    inputs: true,
                     instructions: true,
                     profileSwitcher: false,
                 }
@@ -253,28 +268,64 @@ function DriverDetailsOrderPage() {
             directionsRef.current.setDestination(coordinatesB)
         }
 
-        directionsRef.current.on('route', (e) => {
+        directionsRef.current.on('route', async (e) => {
             const results = e.route[0].legs[0].steps
 
-            const positions = []
-            results.forEach(step => {
-                step.intersections.forEach(intersection => {
-                    positions.push(intersection.location)
-                })
-            })
-            setDataRoute(positions)
+            const positions = await fetchPositionsFromDataJson(resi)
+            if (positions.length === 0) {
+                const positionsFromResults = results.map(step => step.intersections.map(intersection => intersection.location)).flat()
+                setDataRoute(positionsFromResults)
+            } else {
+                setDataRoute(positions)
+            }
         })
     }
 
-    if (loadingResi) return <p>Loading Resi...</p>
+    const fetchPositionsFromDataJson = async (id) => {
+        try {
+            const response = await fetch('http://localhost:3001/position')
+            const data = await response.json()
+            const routeData = data.find(route => route.id === id)
+            return routeData ? routeData.position : []
+        } catch (error) {
+            console.error('Error fetching positions from data.json:', error)
+            return []
+        }
+    }
 
-    // if (loading) {
-    //     return (
-    //         <div className='container mx-auto flex justify-center items-center h-screen'>
-    //             <h1>Loading...</h1>
-    //         </div>
-    //     )
-    // }
+    const writeHistory = async () => {
+        try {
+            // Check if the data already exists
+            const existingData = await fetchPositionsFromDataJson(resi)
+            if (existingData.length > 0) {
+                console.log('Data already exists, not adding to JSON server')
+                return
+            }
+
+            const response = await fetch('http://localhost:3001/position', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: resi, position: dataRoute })
+            })
+            if (!response.ok) {
+                throw new Error('Failed to send positions to JSON server')
+            }
+            console.log('Positions sent successfully')
+        } catch (error) {
+            console.error('Error sending positions:', error)
+        }
+    }
+
+    useEffect(() => {
+        if (dataRoute && dataRoute.length > 0) {
+            // Send positions to JSON server
+            writeHistory()
+        }
+    }, [dataRoute])
+
+    if (loadingResi) return <p>Loading Resi...</p>
 
     if (error) {
         return (
