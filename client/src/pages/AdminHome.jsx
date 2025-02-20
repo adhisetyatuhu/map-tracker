@@ -64,7 +64,7 @@ function RouteRow({ trackingCode, provider, addressA, addressB, status, driver, 
     return (
         <>
             {
-                loadingDrivers ? <tr><td colSpan="5" className="text-center py-3">Loading...</td></tr> :
+                loadingDrivers ? <tr><td colSpan="5" className="text-center py-3 border-b border-gray-300">Loading...</td></tr> :
                     <tr className="hover:bg-gray-100">
                         <td className="border-b py-2 px-4 border-gray-300">
                             <div className="font-bold">{trackingCode}</div>
