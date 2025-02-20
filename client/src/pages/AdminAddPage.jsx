@@ -6,6 +6,7 @@ import { AuthContext } from '../context/AuthContext'
 import { setDoc, doc } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import Swal from 'sweetalert2'
+import { TruckSpeedIcon } from '../utils/icons'
 
 const accessToken = import.meta.env.VITE_API_KEY_MapBox
 
@@ -145,7 +146,7 @@ function AdminAddPage() {
             Swal.fire({
                 position: "top-end",
                 icon: "success",
-                title: "Pesanan telah ditambahkan!",
+                title: "New tracking destination has been created!",
                 showConfirmButton: false,
                 timer: 1500
             })
@@ -168,85 +169,95 @@ function AdminAddPage() {
             <div>
                 <div className='container mx-auto'>
                     <div className='flex gap-4'>
-                        <form
-                            className='w-1/3 h-full lg:mt-6 flex flex-col space-y-4 border border-gray-300 bg-white p-4 rounded-md'
-                            onSubmit={handleSubmit}
-                        >
-                            <h1 className='text-2xl font-bold'>Add Route</h1>
-                            <fieldset>
-                                <label>From:</label>
-                                <SearchBox
-                                    accessToken={accessToken}
-                                    map={mapInstanceRefA.current}
-                                    mapboxgl={mapboxgl}
-                                    value={inputValueA}
-                                    onChange={(d) => {
-                                        setInputValueA(d)
-                                    }}
-                                    placeholder='Search for Pickup location'
-                                    onClear={clearForm}
-                                    onRetrieve={handleRetrieveA}
-                                    options={{
-                                        language: 'id',
-                                        country: 'ID'
-                                    }}
-                                    marker
-                                />
-                            </fieldset>
-                            <fieldset>
-                                <label>To:</label>
-                                <SearchBox
-                                    accessToken={accessToken}
-                                    map={mapInstanceRefB.current}
-                                    mapboxgl={mapboxgl}
-                                    value={inputValueB}
-                                    onClear={clearForm}
-                                    onChange={(d) => {
-                                        setInputValueB(d)
-                                    }}
-                                    placeholder='Search for Destination location'
-                                    onRetrieve={handleRetrieveB}
-                                    options={{
-                                        language: 'id',
-                                        country: 'ID'
-                                    }}
-                                    marker
-                                />
-                            </fieldset>
-                            <fieldset>
-                                <select
-                                    className='border border-gray-300 shadow w-full p-2 my-4 rounded-md'
-                                    value={provider}
-                                    onChange={(e) => setProvider(e.target.value)}
-                                >
-                                    <option value="" hidden>Select Provider</option>
-                                    <option value="jnt">J&T</option>
-                                    <option value="jne">JNE</option>
-                                    <option value="posindonesia">Pos Indonesia</option>
-                                    <option value="tiki">TIKI</option>
-                                    <option value="wahana">Wahana</option>
-                                    <option value="anteraja">AnterAja</option>
-                                    <option value="sicepat">SiCepat</option>
-                                    <option value="lionparcel">Lion Parcel</option>
-                                    <option value="firstlogistic">First Logistics</option>
-                                    <option value="indahcargo">Indah Cargo</option>
-                                </select>
-                            </fieldset>
-                            <fieldset>
-                                <button
-                                    type='submit'
-                                    disabled={!mapLoadedA || !mapLoadedB || !provider || !coordinatesA.length || !coordinatesB.length}
-                                    className={` bg-blue-500 text-white py-2 px-4 rounded-md ${!mapLoadedA || !mapLoadedB || !provider || !coordinatesA.length || !coordinatesB.length ? 'cursor-not-allowed' : 'hover:cursor-pointer hover:bg-blue-600 active:bg-blue-500'}`}
-                                >
-                                    Submit
-                                </button>
-                            </fieldset>
-                        </form>
-                        <div className='h-screen w-2/3'>
-                            From:
-                            <div className='border-4 border-white outline-1 outline-gray-300 mb-2' id="map-container-a" ref={mapContainerRefA} style={{ height: '40%', width: '100%' }} />
-                            To:
-                            <div className='border-4 border-white outline-1 outline-gray-300' id="map-container-b" ref={mapContainerRefB} style={{ height: '40%', width: '100%' }} />
+                        <div className='h-[38rem] w-full'>
+                            <form
+                                className='h-full lg:mt-6 flex flex-col space-y-4 shadow-md border-gray-300 bg-white p-4 rounded-md'
+                                onSubmit={handleSubmit}
+                            >
+                                <h1 className='text-2xl font-bold text-center'>Add New Delivery</h1>
+
+                                <div className='flex gap-4 h-96'>
+                                    <div className='w-1/2'>
+                                        <fieldset>
+                                            <label>From:</label>
+                                            <SearchBox
+                                                accessToken={accessToken}
+                                                map={mapInstanceRefA.current}
+                                                mapboxgl={mapboxgl}
+                                                value={inputValueA}
+                                                onChange={(d) => {
+                                                    setInputValueA(d)
+                                                }}
+                                                placeholder='Search for Pickup location'
+                                                onClear={clearForm}
+                                                onRetrieve={handleRetrieveA}
+                                                options={{
+                                                    language: 'id',
+                                                    country: 'ID'
+                                                }}
+                                                marker
+                                            />
+                                        </fieldset>
+                                        <div className='border-4 border-white outline-1 outline-gray-300 mb-2' id="map-container-a" ref={mapContainerRefA} style={{ height: '90%', width: '100%' }} />
+                                    </div>
+
+                                    <div className='w-1/2 h-96'>
+                                        <fieldset>
+                                            <label>To:</label>
+                                            <SearchBox
+                                                accessToken={accessToken}
+                                                map={mapInstanceRefB.current}
+                                                mapboxgl={mapboxgl}
+                                                value={inputValueB}
+                                                onClear={clearForm}
+                                                onChange={(d) => {
+                                                    setInputValueB(d)
+                                                }}
+                                                placeholder='Search for Destination location'
+                                                onRetrieve={handleRetrieveB}
+                                                options={{
+                                                    language: 'id',
+                                                    country: 'ID'
+                                                }}
+                                                marker
+                                            />
+                                        </fieldset>
+                                        <div className='border-4 border-white outline-1 outline-gray-300' id="map-container-b" ref={mapContainerRefB} style={{ height: '90%', width: '100%' }} />
+                                    </div>
+                                </div>
+
+                                <fieldset className='pr-4'>
+                                    <select
+                                        className='border border-gray-300 shadow w-1/2 p-2 mt-6 rounded'
+                                        value={provider}
+                                        onChange={(e) => setProvider(e.target.value)}
+                                    >
+                                        <option value="" hidden>Select Provider</option>
+                                        <option value="jnt">J&T</option>
+                                        <option value="jne">JNE</option>
+                                        <option value="posindonesia">Pos Indonesia</option>
+                                        <option value="tiki">TIKI</option>
+                                        <option value="wahana">Wahana</option>
+                                        <option value="anteraja">AnterAja</option>
+                                        <option value="sicepat">SiCepat</option>
+                                        <option value="lionparcel">Lion Parcel</option>
+                                        <option value="firstlogistic">First Logistics</option>
+                                        <option value="indahcargo">Indah Cargo</option>
+                                    </select>
+                                </fieldset>
+
+                                <fieldset>
+                                    <button
+                                        type='submit'
+                                        disabled={!mapLoadedA || !mapLoadedB || !provider || !coordinatesA.length || !coordinatesB.length}
+                                        className={`flex flex-nowrap gap-2 bg-blue-500 text-white py-2 px-4 rounded-md ${!mapLoadedA || !mapLoadedB || !provider || !coordinatesA.length || !coordinatesB.length ? 'cursor-not-allowed' : 'hover:cursor-pointer hover:bg-blue-600 active:bg-blue-500'}`}
+                                    >
+                                        <TruckSpeedIcon size={24} />
+                                        Create Delivery
+                                    </button>
+                                </fieldset>
+
+                            </form>
                         </div>
                     </div>
                 </div>
