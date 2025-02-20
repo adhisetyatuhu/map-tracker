@@ -77,13 +77,23 @@ function RouteRow({ trackingCode, provider, addressA, addressB, status, driver, 
                         <td className="border-b py-2 px-4 border-gray-300">{status}</td>
                         <td className="border-b py-2 px-4 border-gray-300">{driverMatch.email}</td>
                         <td className="border-b py-2 px-4 border-gray-300">
-                            <button
-                                className="border border-blue-500 text-sm text-blue-600 hover:text-white flex gap-2 items-center px-2 py-1 rounded group hover:bg-blue-500 hover:cursor-pointer"
-                                onClick={navigateDetail}
-                            >
-                                <MapIcon className="fill-blue-500 group-hover:fill-white" size={16} />
-                                <span>Detail</span>
-                            </button>
+                            {
+                                status === 'done' && driverMatch ?
+                                    <button
+                                        className="border border-blue-500 text-sm text-blue-600 hover:text-white flex gap-2 items-center px-2 py-1 rounded group hover:bg-blue-500 hover:cursor-pointer"
+                                        onClick={navigateDetail}
+                                    >
+                                        <MapIcon className="fill-blue-500 group-hover:fill-white" size={16} />
+                                        <span>Detail</span>
+                                    </button> :
+                                    <button
+                                        className="border border-gray-300 bg-gray-300 text-sm text-white flex gap-2 items-center px-2 py-1 rounded hover:cursor-not-allowed"
+                                    >
+                                        <MapIcon className="fill-white" size={16} />
+                                        <span>Detail</span>
+                                    </button>
+                            }
+
                         </td>
                     </tr>
             }
