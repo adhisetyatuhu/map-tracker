@@ -155,8 +155,22 @@ function AdminDetailsRoutePage() {
     }, [mapLoaded, history])
 
     return (
-        <div>
-            <div id="map-container" ref={mapContainerRef} style={{ height: '100vh', width: '100%' }} />
+        <div className='container mx-auto'>
+            <div className='relative'>
+                <h1 className='text-center py-2 text-xl'><span className='uppercase'>Tracking Code:</span><span className='font-bold'> {resi.split('-')[1]}</span></h1>
+                <div className='border-4 border-white outline-1 outline-gray-300' id="map-container" ref={mapContainerRef} style={{ height: '80vh', width: '100%' }} />
+                <div className='absolute py-14 px-4 left-0 top-0'>
+                    <div className='bg-black/70 text-white grid grid-cols-3 pb-2'>
+                        <div className='col-span-3 border-b border-white/30 px-2 py-1 font-bold uppercase'>{driver?.firstName} {driver?.lastName}</div>
+                        <div className='px-2'>From</div>
+                        <div className='col-span-2 px-2'>: {route?.locationA?.address}</div>
+                        <div className='px-2'>To</div>
+                        <div className='col-span-2 px-2'>: {route?.locationB?.address}</div>
+                        <div className='px-2'>Arrived at </div>
+                        <div className='col-span-2 px-2 capitalize'>: {history?.timeStamp?.toDate().toLocaleString('en-GB')}</div>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
