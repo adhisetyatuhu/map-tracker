@@ -69,7 +69,7 @@ function DriverHomePage() {
             const newHistory = {
                 ...driverData.history,
                 [resi]: {
-                    lastPositionDriver: [],
+                    historyRoutesDriver: [],
                     timeStamp: ""
                 }
             }

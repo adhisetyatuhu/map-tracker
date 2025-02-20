@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, where } from 'firebase/firestore'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { db } from '../config/firebase'
@@ -42,8 +42,6 @@ function DriverDetailsOrderPage() {
                 navigate('/admin')
             } else if (route?.status === 'done') {
                 navigate('/driver')
-            } else if (route.length === 0) {
-                navigate('/driver')
             }
         }
     }, [user, loading, profile, route])
@@ -85,7 +83,7 @@ function DriverDetailsOrderPage() {
             if (idx >= dataRoute.length) {
                 clearInterval(updateLocation)
             }
-        }, 200)
+        }, 500)
     }
 
     const getResi = async () => {
@@ -122,10 +120,16 @@ function DriverDetailsOrderPage() {
             const driverDoc = await getDoc(driverDocRef)
             const driverData = driverDoc.data()
 
+            // Flatten dataRoute if it contains nested arrays
+            const flattenedDataRoute = dataRoute.map(route => ({
+                long: route[0],
+                lat: route[1]
+            }))
+
             const newHistory = {
                 ...driverData.history,
                 [resi]: {
-                    lastPositionDriver: [liveLocation[0], liveLocation[1]],
+                    historyRoutesDriver: flattenedDataRoute, // Use flattened dataRoute
                     timeStamp: new Date()
                 }
             }

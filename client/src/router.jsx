@@ -9,6 +9,7 @@ import DriverDetailsOrderPage from './pages/DriverDetailsOrderPage';
 import MainLayout from './layouts/MainLayout';
 import AdminLayout from './layouts/AdminLayout';
 import AdminHome from './pages/AdminHome';
+import AdminDetailsRoutePage from './pages/AdminDetailsRoutePage';
 
 const router = createBrowserRouter([
     {
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
             {
                 path: '/admin/add',
                 element: <AdminAddPage />
+            },
+            {
+                path: '/admin/:id',
+                element: <AdminDetailsRoutePage />
             }
         ]
     }
