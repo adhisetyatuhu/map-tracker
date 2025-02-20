@@ -1,4 +1,10 @@
 @import "tailwindcss";
 html {
-  background-color: #f7fafc;
+    background-color: #f7fafc;
+}
+
+@media only screen and (max-width: 600px) {
+    .mapboxgl-control-container {
+        display: none;
+    }
 }

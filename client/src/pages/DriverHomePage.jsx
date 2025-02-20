@@ -128,22 +128,22 @@ function DriverHomePage() {
     }
 
     return (
-        <div className='container mx-auto flex flex-col items-center justify-center gap-10 lg:mt-40'>
-            <h1 className='text-3xl font-bold'>ALL-IN-ONE PACKAGE TRACKING</h1>
-            <h3>Support 2500+ carriers and 190+ airlines worldwide</h3>
-            <div className='flex gap-4'>
-                <div>
+        <div className='container mx-auto p-2 flex flex-col items-center justify-center gap-10 lg:mt-40'>
+            <h1 className='text-3xl font-bold text-center'>ALL-IN-ONE PACKAGE TRACKING</h1>
+            <h3 className='text-center'>Support 2500+ carriers and 190+ airlines worldwide</h3>
+            <div className='flex gap-4 flex-wrap justify-center w-full'>
+                <div className='w-full sm:w-auto'>
                     <input
-                        className='border border-blue-500 p-2 h-12 rounded-md'
+                        className='border border-blue-500 p-2 h-12 rounded-md w-full sm:w-60 lg:w-96'
                         type='text'
                         placeholder='Enter your tracking code'
                         value={trackCode}
                         onChange={(e) => setTrackCode(e.target.value)}
                     />
                 </div>
-                <div>
+                <div className='w-full sm:w-auto'>
                     <button
-                        className={`  text-white py-2 px-4 h-12 rounded-md flex gap-2 items-center ${!profile?.provider || !trackCode ? 'cursor-not-allowed bg-blue-500/60' : 'cursor-pointer bg-blue-500'}`}
+                        className={`text-white py-2 px-4 h-12 rounded-md flex gap-2 items-center justify-center w-full sm:w-auto ${!profile?.provider || !trackCode ? 'cursor-not-allowed bg-blue-500/60' : 'cursor-pointer bg-blue-500'}`}
                         disabled={!profile?.provider || !trackCode}
                         type='submit'
                         onClick={navigateDetail} // Redirect to driver page

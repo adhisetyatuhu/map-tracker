@@ -104,13 +104,13 @@ function DriverDetailsOrderPage() {
     const handleFinish = async () => {
         try {
             Swal.fire({
-                title: "Are you sure?",
+                title: "Finish?",
                 text: "You won't be able to revert this!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, delete it!"
+                confirmButtonText: "Yes!"
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     const isArrived = dataRoute[dataRoute.length - 1][0] === liveLocation[0] && dataRoute[dataRoute.length - 1][1] === liveLocation[1];
@@ -147,8 +147,8 @@ function DriverDetailsOrderPage() {
                     navigate('/driver');
 
                     Swal.fire({
-                        title: "Deleted!",
-                        text: "Your file has been deleted.",
+                        title: "Finished!",
+                        text: "You have finished the delivery.",
                         icon: "success"
                     });
                 }
@@ -340,7 +340,7 @@ function DriverDetailsOrderPage() {
             <h1 className='text-xl text-center py-2'><span className='font-bold'>TRACKING CODE:</span> {resi.split('-')[1]}</h1>
 
             <div className='relative border-1 border-gray-300 p-2 bg-white'>
-                <div className='absolute z-10 right-0 py-4 px-4'>
+                {/* <div className='absolute z-10 right-0 py-4 px-4'>
                     <div className=' bg-black/70 text-white p-2'>
                         <div className='flex gap-2'>
                             A:
@@ -355,16 +355,16 @@ function DriverDetailsOrderPage() {
                         <p>{data.provider}</p>
                         <p>{data.status}</p>
                     </div>
-                </div>
+                </div> */}
                 <div id="map-container" ref={mapContainerRef} style={{ height: '80vh', width: '100%' }} />
                 {
                     startJourney !== true && (
                         <button
-                            className='border absolute bottom-10 left-10 cursor-pointer px-5 rounded-full bg-blue-500 text-white py-5'
+                            className='border absolute bottom-10 left-10 cursor-pointer px-6 rounded-full bg-blue-500 text-white py-5'
                             onClick={() => setStartJourney(true)}
                         >
 
-                            Start Journey
+                            Start
                         </button>
                     )
                 }

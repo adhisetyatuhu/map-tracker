@@ -1,6 +1,6 @@
 import { signOut } from "firebase/auth";
 import { auth } from "../config/firebase";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 export default function Logout() {
@@ -22,6 +22,6 @@ export default function Logout() {
         }
     }
     return (
-        <button className="text-white hover:underline hover:cursor-pointer" onClick={handleLogout}>Logout</button>
+        <Link className="text-blue-900 hover:bg-blue-700/10 hover:text-blue-700 rounded-md px-4 py-2 font-semibold hover:cursor-pointer" onClick={handleLogout}>Logout</Link>
     );
 }
