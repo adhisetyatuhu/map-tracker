@@ -2,6 +2,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../config/firebase";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { LogoutIcon } from "../utils/icons";
 
 export default function Logout() {
     const navigate = useNavigate();
@@ -22,6 +23,6 @@ export default function Logout() {
         }
     }
     return (
-        <Link className="text-blue-900 hover:bg-blue-700/10 hover:text-blue-700 rounded-md px-4 py-2 font-semibold hover:cursor-pointer" onClick={handleLogout}>Logout</Link>
+        <Link className="text-blue-900 hover:bg-red-700/10 hover:text-blue-700 rounded-md px-4 py-2 font-semibold hover:cursor-pointer flex gap-1" onClick={handleLogout}><LogoutIcon size={24} className="fill-red-700 hover:fill-red-500" /> </Link>
     );
 }
