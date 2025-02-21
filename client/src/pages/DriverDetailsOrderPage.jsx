@@ -80,7 +80,7 @@ function DriverDetailsOrderPage() {
             if (idx >= dataRoute.length) {
                 clearInterval(updateLocation)
             }
-        }, 500)
+        }, 1000)
     }
 
     const getResi = async () => {
@@ -115,6 +115,9 @@ function DriverDetailsOrderPage() {
                 if (result.isConfirmed) {
                     const isArrived = dataRoute[dataRoute.length - 1][0] === liveLocation[0] && dataRoute[dataRoute.length - 1][1] === liveLocation[1];
                     const message = isArrived ? "Your driver has arrived at the destination" : "Your driver has not arrived at the destination";
+                    const messageStatus = isArrived ? "You have finished the delivery." : "The delivery is not completed yet.";
+                    const icon = isArrived ? "success" : "warning";
+                    const title = isArrived ? "Finished!" : "Not Finished!";
 
                     await updateDoc(doc(db, 'routes', resi), {
                         status: "done",
@@ -147,9 +150,9 @@ function DriverDetailsOrderPage() {
                     navigate('/driver');
 
                     Swal.fire({
-                        title: "Finished!",
-                        text: "You have finished the delivery.",
-                        icon: "success"
+                        title: title,
+                        text: messageStatus,
+                        icon: icon,
                     });
                 }
             });
@@ -212,7 +215,7 @@ function DriverDetailsOrderPage() {
         mapInstanceRef.current.on("load", () => {
             setMapLoaded(true)
 
-            mapInstanceRef.current.loadImage("https://res.cloudinary.com/jeannede/image/upload/v1739967955/pggjhdjlf6tfvjzo0kfz.png", (error, image) => {
+            mapInstanceRef.current.loadImage("https://res.cloudinary.com/jeannede/image/upload/v1740119295/icontruckwest.png", (error, image) => {
                 if (error) throw error
 
                 mapInstanceRef.current.addImage("truck", image)
@@ -255,7 +258,7 @@ function DriverDetailsOrderPage() {
                 unit: 'metric',
                 profile: 'mapbox/driving',
                 controls: {
-                    inputs: true,
+                    inputs: false,
                     instructions: true,
                     profileSwitcher: false,
                 }
@@ -360,7 +363,7 @@ function DriverDetailsOrderPage() {
                 {
                     startJourney !== true && (
                         <button
-                            className='border absolute bottom-10 left-10 cursor-pointer px-6 rounded-full bg-blue-500 text-white py-5'
+                            className='border absolute bottom-10 right-10 cursor-pointer px-6 rounded-full bg-blue-500 text-white py-5'
                             onClick={() => setStartJourney(true)}
                         >
 
@@ -368,12 +371,16 @@ function DriverDetailsOrderPage() {
                         </button>
                     )
                 }
-                <button
-                    className='border absolute bottom-10 right-10 cursor-pointer px-5 rounded-full bg-blue-500 text-white py-5'
-                    onClick={handleFinish}
-                >
-                    Finish
-                </button>
+                {
+                    startJourney === true && (
+                        <button
+                            className='border absolute bottom-10 right-10 cursor-pointer px-6 rounded-full bg-red-500 text-white py-5'
+                            onClick={handleFinish}
+                        >
+                            Finish
+                        </button>
+                    )
+                }
             </div>
         </div>
     )

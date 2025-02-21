@@ -57,7 +57,7 @@ function Login() {
                             <img className="h-24 mx-auto bg-amber-50 rounded-full" src={logo} alt="logo" />
                         </div>
 
-                        <h1 className="text-2xl font-bold my-8 text-center">Create Your Account for Free</h1>
+                        <h1 className="text-2xl font-bold my-8 text-center">Login Your Account</h1>
                         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                             <input
                                 className="border border-gray-400 py-1 px-2"

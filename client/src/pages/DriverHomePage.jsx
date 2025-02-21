@@ -79,9 +79,9 @@ function DriverHomePage() {
             })
 
             Swal.fire({
-                position: "top-end",
+                position: "center",
                 icon: "success",
-                title: "Your work has been saved",
+                title: "let's go!",
                 showConfirmButton: false,
                 timer: 1500
             });
@@ -90,13 +90,13 @@ function DriverHomePage() {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
-                text: "Pesanan telah selesai!",
+                text: "The order has been completed!",
             })
         } else {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
-                text: "Pesanan tidak ditemukan!",
+                text: "Order not found!",
             })
         }
     }

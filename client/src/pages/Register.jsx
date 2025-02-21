@@ -6,6 +6,7 @@ import { GoogleIcon } from "../utils/icons";
 import { auth, db } from "../config/firebase";
 import logo from "../assets/logo.png"
 import truck from "../assets/truck.png"
+import Swal from "sweetalert2";
 
 function RegisterSidebar() {
     return (
@@ -88,6 +89,13 @@ function Register() {
                 history: {},
                 id: userCredential.user.uid
             })
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Sign up success",
+                showConfirmButton: false,
+                timer: 1500
+            });
             navigate('/login');
 
         } catch (error) {
